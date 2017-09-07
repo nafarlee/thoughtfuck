@@ -1,3 +1,7 @@
+use std::io;
+use std::io::Read;
+
+
 type Cell = u8;
 
 pub struct VM {
@@ -14,6 +18,13 @@ impl VM {
 
     pub fn output(&self) {
         print!("{}", self.cells[self.data_pointer]);
+    }
+
+
+    pub fn input(&self) {
+        let mut buffer = [0; 1];
+        let mut stdin = io::stdin();
+        stdin.read_exact(&mut buffer).unwrap();
     }
 
 
