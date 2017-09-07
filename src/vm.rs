@@ -23,6 +23,11 @@ impl VM {
     }
 
 
+    pub fn decrement(&mut self) {
+        self.cells[self.data_pointer] = self.cells[self.data_pointer] - 1;
+    }
+
+
     pub fn right_shift(&mut self) {
         self.data_pointer = self.data_pointer + 1;
     }
