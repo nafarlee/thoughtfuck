@@ -21,4 +21,9 @@ impl VM {
         let value = self.cells[self.data_pointer];
         self.cells[self.data_pointer] = value + 1;
     }
+
+
+    pub fn right_shift(&mut self) {
+        self.data_pointer = self.data_pointer + 1;
+    }
 }
