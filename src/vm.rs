@@ -26,4 +26,9 @@ impl VM {
     pub fn right_shift(&mut self) {
         self.data_pointer = self.data_pointer + 1;
     }
+
+
+    pub fn left_shift(&mut self) {
+        self.data_pointer = self.data_pointer - 1;
+    }
 }
