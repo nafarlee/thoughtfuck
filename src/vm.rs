@@ -15,4 +15,10 @@ impl VM {
     pub fn output(&self) -> Cell {
         self.cells[self.data_pointer]
     }
+
+
+    pub fn increment(&mut self) {
+        let value = self.cells[self.data_pointer];
+        self.cells[self.data_pointer] = value + 1;
+    }
 }
