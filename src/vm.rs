@@ -18,8 +18,7 @@ impl VM {
 
 
     pub fn increment(&mut self) {
-        let value = self.cells[self.data_pointer];
-        self.cells[self.data_pointer] = value + 1;
+        self.cells[self.data_pointer] = self.cells[self.data_pointer] + 1;
     }
 
 
