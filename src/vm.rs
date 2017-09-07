@@ -10,4 +10,9 @@ impl VM {
     pub fn new() -> VM {
         VM { cells: [0; 30_000], data_pointer: 0 }
     }
+
+
+    pub fn output(&self) -> Cell {
+        self.cells[self.data_pointer]
+    }
 }
