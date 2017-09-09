@@ -59,4 +59,11 @@ impl VM {
             &Command::LeftShift => self.left_shift(),
         }
     }
+
+
+    pub fn apply_many(&mut self, commands: &[Command]) {
+        for command in commands {
+            self.apply(&command)
+        }
+    }
 }
