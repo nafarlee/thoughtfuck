@@ -1,4 +1,5 @@
 mod vm;
+mod command;
 
 use std::io::Write;
 
