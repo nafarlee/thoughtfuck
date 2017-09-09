@@ -22,10 +22,14 @@ impl VM {
     }
 
 
-    pub fn input(&self) {
-        let mut buffer = [0; 1];
-        let mut stdin = io::stdin();
-        stdin.read_exact(&mut buffer).unwrap();
+    pub fn input(&mut self) {
+        match io::stdin().bytes().next() {
+            Some(res) => match res {
+                Ok(value) => self.cells[self.data_pointer] = value,
+                Err(error) => {},
+            },
+            None => {}
+        }
     }
 
 
