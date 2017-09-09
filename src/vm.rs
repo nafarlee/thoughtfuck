@@ -18,7 +18,7 @@ impl VM {
 
 
     pub fn output(&self) {
-        print!("{}", self.cells[self.data_pointer]);
+        print!("{}", self.cells[self.data_pointer] as char);
     }
 
 
