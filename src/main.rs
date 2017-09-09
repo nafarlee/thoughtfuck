@@ -2,9 +2,11 @@ mod vm;
 mod command;
 mod parse;
 
+use vm::VM;
 use std::io::Write;
 
 fn main() {
+    let mut vm = VM::new();
     loop {
         print!("{}", "bf> ");
         std::io::stdout().flush().unwrap();
