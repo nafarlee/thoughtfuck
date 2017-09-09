@@ -1,5 +1,6 @@
 use std::io;
 use std::io::Read;
+use command::Command;
 
 
 type Cell = u8;
@@ -45,5 +46,17 @@ impl VM {
 
     pub fn left_shift(&mut self) {
         self.data_pointer = self.data_pointer - 1;
+    }
+
+
+    pub fn apply(&mut self, command: Command) {
+        match command {
+            Command::Output => self.output(),
+            Command::Input => self.input(),
+            Command::Increment => self.increment(),
+            Command::Decrement => self.decrement(),
+            Command::RightShift => self.right_shift(),
+            Command::LeftShift => self.left_shift(),
+        }
     }
 }
