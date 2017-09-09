@@ -30,6 +30,7 @@ impl VM {
             },
             None => {}
         }
+        println!("");
     }
 
 
