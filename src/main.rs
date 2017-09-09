@@ -17,5 +17,6 @@ fn main() {
             Ok(_) => parse::parse(&line),
             Err(error) => panic!(error),
         };
+        vm.apply_many(&commands);
     }
 }
