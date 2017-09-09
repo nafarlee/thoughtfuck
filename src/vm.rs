@@ -26,7 +26,7 @@ impl VM {
         match io::stdin().bytes().next() {
             Some(res) => match res {
                 Ok(value) => self.cells[self.data_pointer] = value,
-                Err(error) => {},
+                Err(error) => panic!(error),
             },
             None => {}
         }
