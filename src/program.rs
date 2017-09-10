@@ -43,7 +43,7 @@ impl Program {
                     if command == Command::JumpForward {
                         index = self.start_jump_forward(vm, index);
                     } else if command == Command::JumpBackward {
-                        self.current_depth = self.current_depth - 1
+                        index = self.jump_backward(&vm, index);
                     } else {
                         vm.apply(command);
                         index = index + 1;
