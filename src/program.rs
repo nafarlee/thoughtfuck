@@ -51,7 +51,8 @@ impl Program {
 
 
     fn seek_forward(&mut self, mut index: usize) -> usize {
-        while self.current_depth != self.goal_depth.unwrap() && index < self.instructions.len() {
+        let goal_depth = self.goal_depth.unwrap();
+        while self.current_depth != goal_depth && index < self.instructions.len() {
             match self.instructions[index] {
                 Command::JumpForward => self.current_depth = self.current_depth + 1,
                 Command::JumpBackward => self.current_depth = self.current_depth - 1,
