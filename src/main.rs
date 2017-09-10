@@ -1,6 +1,7 @@
 mod vm;
 mod command;
 mod parse;
+mod program;
 
 use vm::VM;
 use std::io::Write;
