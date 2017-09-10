@@ -65,11 +65,4 @@ impl VM {
             _ => {},
         }
     }
-
-
-    pub fn apply_many(&mut self, commands: &[Command]) {
-        for command in commands {
-            self.apply(*command)
-        }
-    }
 }
