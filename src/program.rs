@@ -33,6 +33,11 @@ impl Program {
         match self.instruction_pointer {
             None => {},
             Some(mut index) => {
+                if self.is_seeking {
+                    let (new_index, still_seeking) = self.seek_forward(index);
+                    self.is_seeking = still_seeking;
+                    index = new_index;
+                }
                 while index < self.instructions.len() {
                     let command = self.instructions[index];
                     if command == Command::JumpForward {
