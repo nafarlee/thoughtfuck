@@ -10,6 +10,8 @@ pub fn parse(s: &str) -> Vec<Command> {
             '>' => Some(Command::RightShift),
             '+' => Some(Command::Increment),
             '-' => Some(Command::Decrement),
+            '[' => Some(Command::JumpForward),
+            ']' => Some(Command::JumpBackward),
             _   => None,
         };
         match command {
