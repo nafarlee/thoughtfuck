@@ -1,4 +1,5 @@
 use command::Command;
+use vm::VM;
 
 
 pub struct Program {
@@ -24,5 +25,9 @@ impl Program {
 
     pub fn append(&mut self, instructions: &[Command]) {
         self.instructions.extend(instructions.iter().cloned());
+    }
+
+
+    pub fn execute(&mut self, vm: &mut VM) {
     }
 }
