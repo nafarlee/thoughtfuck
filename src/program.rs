@@ -77,7 +77,7 @@ impl Program {
             return index;
         } else {
             self.current_depth = self.current_depth + 1;
-            return index;
+            return index + 1;
         }
     }
 }
