@@ -35,6 +35,8 @@ impl Program {
             Some(mut index) => {
                 while index < self.instructions.len() {
                     let command = self.instructions[index];
+                    if command == Command::JumpForward { self.current_depth = self.current_depth + 1}
+                    if command == Command::JumpBackward { self.current_depth = self.current_depth - 1}
                     vm.apply(command);
                     index = index + 1;
                 }
