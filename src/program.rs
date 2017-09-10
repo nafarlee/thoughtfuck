@@ -18,4 +18,9 @@ impl Program {
             goal_depth: None,
         }
     }
+
+
+    pub fn append(&mut self, instructions: &[Command]) {
+        self.instructions.extend(instructions.iter().cloned());
+    }
 }
