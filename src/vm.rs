@@ -54,14 +54,14 @@ impl VM {
     }
 
 
-    pub fn apply(&mut self, command: &Command) {
+    pub fn apply(&mut self, command: Command) {
         match command {
-            &Command::Output => self.output(),
-            &Command::Input => self.input(),
-            &Command::Increment => self.increment(),
-            &Command::Decrement => self.decrement(),
-            &Command::RightShift => self.right_shift(),
-            &Command::LeftShift => self.left_shift(),
+            Command::Output => self.output(),
+            Command::Input => self.input(),
+            Command::Increment => self.increment(),
+            Command::Decrement => self.decrement(),
+            Command::RightShift => self.right_shift(),
+            Command::LeftShift => self.left_shift(),
             _ => {},
         }
     }
@@ -69,7 +69,7 @@ impl VM {
 
     pub fn apply_many(&mut self, commands: &[Command]) {
         for command in commands {
-            self.apply(&command)
+            self.apply(*command)
         }
     }
 }

@@ -34,7 +34,7 @@ impl Program {
             None => {},
             Some(mut index) => {
                 while index < self.instructions.len() {
-                    let command = &self.instructions[index];
+                    let command = self.instructions[index];
                     vm.apply(command);
                     index = index + 1;
                 }
