@@ -55,6 +55,32 @@ impl Program {
     }
 
 
+    fn jump_backward (&mut self, vm: &VM, starting_index: usize) -> usize {
+        match vm.cells[vm.data_pointer] {
+            0 => {
+                self.current_depth = self.current_depth - 1;
+                starting_index + 1
+            },
+            _ => {
+                let goal_depth = self.current_depth;
+                for index in (0..starting_index).rev() {
+                    match self.instructions[index] {
+                        Command::JumpBackward => {
+                            self.current_depth = self.current_depth + 1;
+                        },
+                        Command::JumpForward => {
+                            if self.current_depth == goal_depth { return index + 1 }
+                            self.current_depth = self.current_depth - 1;
+                        },
+                        _ => {},
+                    }
+                }
+                panic!("No starting brace found!");
+            },
+        }
+    }
+
+
     fn seek_forward(&mut self, starting_index: usize) -> (usize, bool) {
         let goal_depth = self.goal_depth.unwrap();
         for index in starting_index..self.instructions.len() {
