@@ -5,7 +5,7 @@ use vm::VM;
 pub struct Program {
     instructions : Vec<Command>,
     instruction_pointer: Option<usize>,
-    is_seeking: bool,
+    pub is_seeking: bool,
     current_depth: u64,
     goal_depth: Option<u64>,
 }
