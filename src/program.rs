@@ -30,5 +30,16 @@ impl Program {
 
 
     pub fn execute(&mut self, vm: &mut VM) {
+        match self.instruction_pointer {
+            None => {},
+            Some(mut index) => {
+                while index < self.instructions.len() {
+                    let command = &self.instructions[index];
+                    vm.apply(command);
+                    index = index + 1;
+                }
+                self.instruction_pointer = Some(index);
+            }
+        }
     }
 }
