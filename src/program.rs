@@ -46,6 +46,19 @@ impl Program {
     }
 
 
+    fn seek_forward(&mut self, mut index: usize) -> usize {
+        while self.current_depth != self.goal_depth.unwrap() && index < self.instructions.len() {
+            match self.instructions[index] {
+                Command::JumpForward => self.current_depth = self.current_depth + 1,
+                Command::JumpBackward => self.current_depth = self.current_depth - 1,
+                _ => {},
+            }
+            index = index + 1;
+        }
+        return index;
+    }
+
+
     fn handle_jump_forward(&mut self, vm: &VM, mut index: usize) -> usize {
         if vm.cells[vm.data_pointer] == 0 {
             self.goal_depth = Some(self.current_depth);
