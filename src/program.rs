@@ -25,6 +25,7 @@ impl Program {
 
     pub fn append(&mut self, instructions: &[Command]) {
         self.instructions.extend(instructions.iter().cloned());
+        if self.instruction_pointer.is_none() { self.instruction_pointer = Some(0); }
     }
 
 
