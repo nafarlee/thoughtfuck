@@ -60,7 +60,7 @@ impl Program {
             }
             index = index + 1;
         }
-        return index;
+        index
     }
 
 
