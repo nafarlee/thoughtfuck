@@ -62,6 +62,7 @@ impl VM {
             &Command::Decrement => self.decrement(),
             &Command::RightShift => self.right_shift(),
             &Command::LeftShift => self.left_shift(),
+            _ => {},
         }
     }
 
