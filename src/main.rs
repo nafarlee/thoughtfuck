@@ -4,10 +4,12 @@ mod parse;
 mod program;
 
 use vm::VM;
+use program::Program;
 use std::io::Write;
 
 fn main() {
     let mut vm = VM::new();
+    let mut program = Program::new();
     loop {
         print!("{}", "bf> ");
         std::io::stdout().flush().unwrap();
@@ -18,6 +20,7 @@ fn main() {
             Ok(_) => parse::parse(&line),
             Err(error) => panic!(error),
         };
-        vm.apply_many(&commands);
+        program.append(&commands);
+        program.execute(&mut vm);
     }
 }
