@@ -36,7 +36,7 @@ impl Program {
                 while index < self.instructions.len() {
                     let command = self.instructions[index];
                     if command == Command::JumpForward {
-                        index = self.handle_jump_forward(vm, index);
+                        index = self.start_jump_forward(vm, index);
                     } else if command == Command::JumpBackward {
                         self.current_depth = self.current_depth - 1
                     } else {
@@ -64,7 +64,7 @@ impl Program {
     }
 
 
-    fn handle_jump_forward(&mut self, vm: &VM, index: usize) -> usize {
+    fn start_jump_forward(&mut self, vm: &VM, index: usize) -> usize {
         if vm.cells[vm.data_pointer] == 0 {
             self.goal_depth = Some(self.current_depth);
             let (index, still_seeking) = self.seek_forward(index);
