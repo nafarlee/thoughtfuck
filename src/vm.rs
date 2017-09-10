@@ -6,8 +6,8 @@ use command::Command;
 type Cell = u8;
 
 pub struct VM {
-    cells: [Cell; 30_000],
-    data_pointer: usize,
+    pub cells: [Cell; 30_000],
+    pub data_pointer: usize,
 }
 
 
