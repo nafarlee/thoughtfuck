@@ -11,7 +11,7 @@ fn main() {
     let mut vm = VM::new();
     let mut program = Program::new();
     loop {
-        print!("{}", "bf> ");
+        print!("{}", if program.is_seeking {"... "} else {"bf> "});
         std::io::stdout().flush().unwrap();
 
         let mut line = String::new();
