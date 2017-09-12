@@ -40,7 +40,9 @@ impl VM {
 
 
     pub fn decrement(&mut self) {
-        self.cells[self.data_pointer] -= 1;
+        self.cells[self.data_pointer] = self.cells[self.data_pointer]
+            .checked_sub(1)
+            .unwrap_or(Cell::max_value());
     }
 
 
