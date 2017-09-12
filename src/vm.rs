@@ -35,11 +35,7 @@ impl VM {
 
 
     pub fn increment(&mut self) {
-        let new_value = match self.cells[self.data_pointer].checked_add(1) {
-            None => 0,
-            Some(x) => x,
-        };
-        self.cells[self.data_pointer] = new_value;
+        self.cells[self.data_pointer] = self.cells[self.data_pointer].checked_add(1).unwrap_or(0);
     }
 
 
