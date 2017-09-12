@@ -52,7 +52,7 @@ impl VM {
 
 
     pub fn left_shift(&mut self) {
-        self.data_pointer += 1;
+        self.data_pointer -= 1;
     }
 
 
