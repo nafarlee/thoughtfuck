@@ -14,21 +14,9 @@ fn main() {
         println!("{}", argument);
     }
 
-    let mut vm = VM::new();
-    let mut program = Program::new();
-    loop {
-        print!("{}", if program.is_seeking {"... "} else {"bf> "});
-        std::io::stdout().flush().unwrap();
-
-        let mut line = String::new();
-        let commands = match std::io::stdin().read_line(&mut line) {
-            Ok(0) => break,
-            Ok(_) => parse::parse(&line),
-            Err(error) => panic!(error),
-        };
-        program.append(&commands);
-        program.execute(&mut vm);
-    }
+    let vm = VM::new();
+    let program = Program::new();
+    repl(vm, program);
 }
 
 
