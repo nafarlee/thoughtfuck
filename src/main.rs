@@ -7,6 +7,9 @@ use vm::VM;
 use program::Program;
 use std::io::Write;
 use std::env;
+use std::path::Path;
+use std::fs::File;
+use std::io::prelude::*;
 
 
 fn main() {
@@ -37,4 +40,17 @@ fn repl (mut vm: VM, mut program: Program) -> () {
         program.append(&commands);
         program.execute(&mut vm);
     }
+}
+
+
+fn interpreter(arg: String, mut vm: VM, mut program: Program) -> () {
+    let path = Path::new(&arg);
+    let mut contents = String::new();
+    File::open(&path)
+        .unwrap()
+        .read_to_string(&mut contents)
+        .unwrap();
+
+    program.append(&parse::parse(&contents));
+    program.execute(&mut vm);
 }
