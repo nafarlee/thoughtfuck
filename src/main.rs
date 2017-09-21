@@ -3,14 +3,15 @@ mod command;
 mod parse;
 mod program;
 
-use vm::VM;
-use program::Program;
-use parse::parse;
 use std::io::Write;
 use std::env;
 use std::path::Path;
 use std::fs::File;
 use std::io::prelude::*;
+
+use vm::VM;
+use program::Program;
+use parse::parse;
 
 
 fn main() {
