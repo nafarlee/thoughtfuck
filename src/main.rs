@@ -16,7 +16,10 @@ fn main() {
 
     let vm = VM::new();
     let program = Program::new();
-    repl(vm, program);
+    match env::args().nth(1) {
+        None => repl(vm, program),
+        Some(_arg) => {}
+    }
 }
 
 
