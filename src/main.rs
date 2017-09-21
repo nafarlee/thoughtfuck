@@ -13,10 +13,6 @@ use std::io::prelude::*;
 
 
 fn main() {
-    for argument in env::args() {
-        println!("{}", argument);
-    }
-
     let vm = VM::new();
     let program = Program::new();
     match env::args().nth(1) {
