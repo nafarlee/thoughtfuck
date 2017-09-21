@@ -6,8 +6,13 @@ mod program;
 use vm::VM;
 use program::Program;
 use std::io::Write;
+use std::env;
 
 fn main() {
+    for argument in env::args() {
+        println!("{}", argument);
+    }
+
     let mut vm = VM::new();
     let mut program = Program::new();
     loop {
