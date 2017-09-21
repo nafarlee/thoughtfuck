@@ -21,7 +21,7 @@ fn main() {
     let program = Program::new();
     match env::args().nth(1) {
         None => repl(vm, program),
-        Some(_arg) => {}
+        Some(arg) => interpreter(arg, vm, program),
     }
 }
 
