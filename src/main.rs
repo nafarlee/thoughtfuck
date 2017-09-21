@@ -3,11 +3,10 @@ mod command;
 mod parse;
 mod program;
 
-use std::io::Write;
+use std::io::{Write, Read};
 use std::env;
 use std::path::Path;
 use std::fs::File;
-use std::io::prelude::*;
 
 use vm::VM;
 use program::Program;
