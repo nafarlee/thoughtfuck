@@ -5,6 +5,7 @@ mod program;
 
 use vm::VM;
 use program::Program;
+use parse::parse;
 use std::io::Write;
 use std::env;
 use std::path::Path;
@@ -30,7 +31,7 @@ fn repl (mut vm: VM, mut program: Program) -> () {
         let mut line = String::new();
         let commands = match std::io::stdin().read_line(&mut line) {
             Ok(0) => break,
-            Ok(_) => parse::parse(&line),
+            Ok(_) => parse(&line),
             Err(error) => panic!(error),
         };
         program.append(&commands);
@@ -47,6 +48,6 @@ fn interpreter(arg: String, mut vm: VM, mut program: Program) -> () {
         .read_to_string(&mut contents)
         .unwrap();
 
-    program.append(&parse::parse(&contents));
+    program.append(&parse(&contents));
     program.execute(&mut vm);
 }
