@@ -88,4 +88,15 @@ mod tests {
         vm.increment();
         assert!(vm.cells[0] == 1);
     }
+
+
+    #[test]
+    fn test_decrement() {
+        const STARTING_VALUE: u8 = 2;
+
+        let mut vm = VM::new();
+        vm.cells[0] = STARTING_VALUE;
+        vm.decrement();
+        assert!(vm.cells[0] == STARTING_VALUE - 1);
+    }
 }
