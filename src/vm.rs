@@ -107,4 +107,15 @@ mod tests {
         vm.right_shift();
         assert!(vm.data_pointer == 1);
     }
+
+
+    #[test]
+    fn test_left_shift() {
+        const STARTING_POSITION: usize = 2;
+
+        let mut vm = VM::new();
+        vm.data_pointer  = STARTING_POSITION;
+        vm.left_shift();
+        assert!(vm.data_pointer == 1);
+    }
 }
