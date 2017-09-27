@@ -1,3 +1,3 @@
 # thoughtfuck
 
-A brainfuck REPL written in Rust.
+A brainfuck Interpreter/REPL written in Rust.
