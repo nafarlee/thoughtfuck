@@ -68,3 +68,16 @@ impl VM {
         }
     }
 }
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn test_new() {
+        let vm = VM::new();
+        assert!(vm.cells[0] == 0);
+        assert!(vm.cells[30_000 - 1] == 0);
+        assert!(vm.cells[0] == 0);
+    }
+}
