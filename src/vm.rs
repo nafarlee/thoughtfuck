@@ -99,4 +99,12 @@ mod tests {
         vm.decrement();
         assert!(vm.cells[0] == STARTING_VALUE - 1);
     }
+
+
+    #[test]
+    fn test_right_shift() {
+        let mut vm = VM::new();
+        vm.right_shift();
+        assert!(vm.data_pointer == 1);
+    }
 }
