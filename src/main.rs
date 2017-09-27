@@ -25,7 +25,7 @@ fn main() {
 
 fn repl (mut vm: VM, mut program: Program) -> () {
     loop {
-        print!("{}", if program.is_seeking {"... "} else {"bf> "});
+        print!("{}", if program.is_seeking {"... "} else {"tf> "});
         std::io::stdout().flush().unwrap();
 
         let mut line = String::new();
