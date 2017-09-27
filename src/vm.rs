@@ -80,4 +80,12 @@ mod tests {
         assert!(vm.cells[30_000 - 1] == 0);
         assert!(vm.cells[0] == 0);
     }
+
+
+    #[test]
+    fn test_increment() {
+        let mut vm = VM::new();
+        vm.increment();
+        assert!(vm.cells[0] == 1);
+    }
 }
