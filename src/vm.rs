@@ -8,12 +8,14 @@ type Cell = u8;
 pub struct VM {
     pub cells: [Cell; 30_000],
     pub data_pointer: usize,
+    out: Stdout
 }
 
 
 impl VM {
-    pub fn new() -> VM {
-        VM { cells: [0; 30_000], data_pointer: 0 }
+    pub fn new(out: Option<Stdout>) -> VM {
+        let stdout = out.unwrap_or_else(|| io::stdout());
+        VM { cells: [0; 30_000], data_pointer: 0, out: stdout }
     }
 
 
