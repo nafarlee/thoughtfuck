@@ -3,7 +3,7 @@ mod command;
 mod parse;
 mod program;
 
-use std::io::{Write, Read};
+use std::io::{stdout, Write, Read};
 use std::env;
 use std::path::Path;
 use std::fs::File;
@@ -14,7 +14,7 @@ use parse::parse;
 
 
 fn main() {
-    let vm = VM::new();
+    let vm = VM::new(Some(stdout()));
     let program = Program::new();
     match env::args().nth(1) {
         None => repl(vm, program),
