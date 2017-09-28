@@ -1,5 +1,5 @@
 use std::io;
-use std::io::Read;
+use std::io::{Write,Read,Stdout};
 use command::Command;
 
 
@@ -19,8 +19,10 @@ impl VM {
     }
 
 
-    pub fn output(&self) {
-        print!("{}", self.cells[self.data_pointer] as char);
+    pub fn output(&mut self) {
+        self.out
+            .write_fmt(format_args!("{}", self.cells[self.data_pointer] as char))
+            .expect("Could not output current byte");
     }
 
 
