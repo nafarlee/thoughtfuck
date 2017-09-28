@@ -79,7 +79,7 @@ mod tests {
     use super::*;
     #[test]
     fn test_new() {
-        let vm = VM::new();
+        let vm = VM::new(None);
         assert!(vm.cells[0] == 0);
         assert!(vm.cells[30_000 - 1] == 0);
         assert!(vm.cells[0] == 0);
@@ -88,7 +88,7 @@ mod tests {
 
     #[test]
     fn test_increment() {
-        let mut vm = VM::new();
+        let mut vm = VM::new(None);
         vm.increment();
         assert!(vm.cells[0] == 1);
     }
@@ -98,7 +98,7 @@ mod tests {
     fn test_decrement() {
         const STARTING_VALUE: u8 = 2;
 
-        let mut vm = VM::new();
+        let mut vm = VM::new(None);
         vm.cells[0] = STARTING_VALUE;
         vm.decrement();
         assert!(vm.cells[0] == STARTING_VALUE - 1);
@@ -107,7 +107,7 @@ mod tests {
 
     #[test]
     fn test_right_shift() {
-        let mut vm = VM::new();
+        let mut vm = VM::new(None);
         vm.right_shift();
         assert!(vm.data_pointer == 1);
     }
@@ -117,7 +117,7 @@ mod tests {
     fn test_left_shift() {
         const STARTING_POSITION: usize = 2;
 
-        let mut vm = VM::new();
+        let mut vm = VM::new(None);
         vm.data_pointer  = STARTING_POSITION;
         vm.left_shift();
         assert!(vm.data_pointer == 1);
