@@ -1,5 +1,5 @@
 use std::io;
-use std::io::{Write,Read,Stdout};
+use std::io::{Write,Read};
 use command::Command;
 
 
