@@ -1,4 +1,5 @@
 extern crate thoughtfuck;
+
 mod common;
 
 use common::FauxStdout;
