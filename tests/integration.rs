@@ -13,3 +13,9 @@ fn hello_world () {
 fn sierpinski () {
     common::test_output("./tests/sierpinski.b", "./tests/sierpinski.txt");
 }
+
+
+#[test]
+fn print_brainfuck () {
+    common::test_output("./tests/print_brainfuck.b", "./tests/print_brainfuck.txt");
+}
