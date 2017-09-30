@@ -99,14 +99,17 @@ impl Program {
 
 
     fn start_jump_forward(&mut self, vm: &VM, index: usize) -> usize {
-        if vm.cells[vm.data_pointer] == 0 {
-            self.goal_depth = Some(self.current_depth);
-            let (index, still_seeking) = self.seek_forward(index);
-            self.is_seeking = still_seeking;
-            return index;
-        } else {
-            self.current_depth = self.current_depth + 1;
-            return index + 1;
+        match vm.cells[vm.data_pointer] {
+            0 => {
+                self.status = ProgramStatus::Seeking(self.current_depth);
+                let (index, still_seeking) = self.seek_forward(index);
+                self.status = if still_seeking { self.status } else { ProgramStatus::Normal };
+                index
+            },
+            _ => {
+                self.current_depth = self.current_depth + 1;
+                index + 1
+            }
         }
     }
 }
