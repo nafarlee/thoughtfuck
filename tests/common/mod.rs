@@ -7,6 +7,13 @@ pub struct FauxStdout {
 }
 
 
+impl FauxStdout {
+    pub fn new() -> FauxStdout {
+        FauxStdout { buffer: String::new() }
+    }
+}
+
+
 impl Write for FauxStdout {
     fn write(&mut self, buf: &[u8]) -> Result<usize> {
         match str::from_utf8(buf) {
