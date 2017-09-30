@@ -18,6 +18,23 @@ fn read_file(filename: &str) -> String {
 }
 
 
+fn test_output(input_filename: &str, expected_answer_filename: &str) {
+    let source = read_file(input_filename);
+
+    let commands = parse(&source);
+
+    let mut program = Program::new();
+    program.append(&commands);
+
+    let mut stdout = FauxStdout::new();
+    {
+        let mut vm = VM::new(&mut stdout);
+        program.execute(&mut vm);
+    }
+    assert_eq!(stdout.buffer, read_file(expected_answer_filename));
+}
+
+
 #[test]
 fn hello_world () {
     const SOURCE: &str = "++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.>++.";
