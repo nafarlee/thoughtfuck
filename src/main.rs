@@ -13,7 +13,8 @@ use parse::parse;
 
 
 fn main() {
-    let vm = VM::new(None);
+    let mut stdout = std::io::stdout();
+    let vm = VM::new(&mut stdout);
     let program = Program::new();
     match env::args().nth(1) {
         None => repl(vm, program),
