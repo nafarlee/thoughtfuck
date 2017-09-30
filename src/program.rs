@@ -10,6 +10,11 @@ pub struct Program {
     goal_depth: Option<u64>,
 }
 
+enum ProgramStatus {
+    Normal,
+    Seeking(u64),
+}
+
 
 impl Program {
     pub fn new () -> Program {
