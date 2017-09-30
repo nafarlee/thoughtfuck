@@ -4,9 +4,9 @@ A brainfuck Interpreter/REPL written in Rust.
 
 ## Synposis
 
-        __tf__ program.b
+    tf program.b
 
-        Execute without arguments to start the REPL.
+    Execute without arguments to start the REPL.
 
 ## Description
 
