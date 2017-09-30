@@ -1,11 +1,10 @@
 mod faux_stdout;
 
 use self::faux_stdout::FauxStdout;
-use std::io::{Read};
+use std::io::Read;
 use std::fs::File;
-use std::str;
-use thoughtfuck::vm::*;
-use thoughtfuck::program::*;
+use thoughtfuck::vm::VM;
+use thoughtfuck::program::Program;
 use thoughtfuck::parse::parse;
 
 
