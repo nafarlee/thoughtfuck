@@ -37,16 +37,5 @@ fn test_output(input_filename: &str, expected_answer_filename: &str) {
 
 #[test]
 fn hello_world () {
-    const SOURCE: &str = "++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.>++.";
-    let commands = parse(SOURCE);
-
-    let mut program = Program::new();
-    program.append(&commands);
-
-    let mut stdout = FauxStdout::new();
-    {
-        let mut vm = VM::new(&mut stdout);
-        program.execute(&mut vm);
-    }
-    assert_eq!(stdout.buffer, "Hello World!\n");
+    test_output("./tests/hello.b", "./tests/hello.txt");
 }
