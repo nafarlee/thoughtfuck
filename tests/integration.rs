@@ -1,6 +1,7 @@
 extern crate thoughtfuck;
 mod common;
 
+use common::FauxStdout;
 use thoughtfuck::vm::*;
 use thoughtfuck::program::*;
 use thoughtfuck::parse::parse;
@@ -13,6 +14,6 @@ fn hello_world () {
     let mut program = Program::new();
     program.append(&commands);
 
-    let mut vm = VM::new(None);
+    let mut vm = VM::new(Some(Box::new(FauxStdout::new())));
     program.execute(&mut vm);
 }
