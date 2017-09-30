@@ -1,4 +1,7 @@
-use std::io::{Read,Write,Result};
+mod faux_stdout;
+
+use self::faux_stdout::FauxStdout;
+use std::io::{Read};
 use std::fs::File;
 use std::str;
 use thoughtfuck::vm::*;
@@ -28,33 +31,4 @@ pub fn test_output(input_filename: &str, expected_answer_filename: &str) {
         program.execute(&mut vm);
     }
     assert_eq!(stdout.buffer, read_file(expected_answer_filename));
-}
-
-
-struct FauxStdout {
-    pub buffer: String
-}
-
-
-impl FauxStdout {
-    pub fn new() -> FauxStdout {
-        FauxStdout { buffer: String::new() }
-    }
-}
-
-
-impl Write for FauxStdout {
-    fn write(&mut self, buf: &[u8]) -> Result<usize> {
-        match str::from_utf8(buf) {
-            Err(e) => panic!(e),
-            Ok(s) => {
-                self.buffer += s;
-                return Ok(s.len());
-            }
-        }
-    }
-
-    fn flush(&mut self) -> Result<()> {
-        Ok(())
-    }
 }
