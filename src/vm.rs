@@ -5,17 +5,16 @@ use command::Command;
 
 type Cell = u8;
 
-pub struct VM {
+pub struct VM <'a> {
     pub cells: [Cell; 30_000],
     pub data_pointer: usize,
-    out: Box<Write>
+    out: &'a mut Write
 }
 
 
-impl VM {
-    pub fn new(out: Option<Box<Write>>) -> VM {
-        let stdout = out.unwrap_or_else(|| Box::new(io::stdout()));
-        VM { cells: [0; 30_000], data_pointer: 0, out: stdout }
+impl <'a> VM <'a> {
+    pub fn new(out: &mut Write) -> VM {
+        VM { cells: [0; 30_000], data_pointer: 0, out }
     }
 
 
