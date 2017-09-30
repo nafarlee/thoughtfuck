@@ -1,7 +1,6 @@
-mod vm;
-mod command;
-mod parse;
-mod program;
+extern crate thoughtfuck;
+
+use thoughtfuck::*;
 
 use std::io::{stdout, Write, Read};
 use std::env;
