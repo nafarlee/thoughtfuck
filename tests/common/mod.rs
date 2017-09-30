@@ -3,7 +3,7 @@ use std::str;
 
 
 pub struct FauxStdout {
-    buffer: String
+    pub buffer: String
 }
 
 
