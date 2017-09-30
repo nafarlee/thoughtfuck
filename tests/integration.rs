@@ -2,10 +2,21 @@ extern crate thoughtfuck;
 
 mod common;
 
+use std::fs::File;
+use std::io::Read;
+
 use common::FauxStdout;
 use thoughtfuck::vm::*;
 use thoughtfuck::program::*;
 use thoughtfuck::parse::parse;
+
+fn read_file(filename: &str) -> String {
+    let mut file = File::open(filename).unwrap();
+    let mut source = String::new();
+    file.read_to_string(&mut source).unwrap();
+    source
+}
+
 
 #[test]
 fn hello_world () {
