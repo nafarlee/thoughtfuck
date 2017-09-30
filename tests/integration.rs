@@ -1,4 +1,5 @@
 extern crate thoughtfuck;
+mod common;
 
 use thoughtfuck::vm::*;
 use thoughtfuck::program::*;
