@@ -97,10 +97,10 @@ impl Program {
                 _ => {},
             }
             if self.current_depth == goal_depth {
-                return (index + 1, ProgramStatus::Normal)
+                return (index + 1, ProgramStatus::Normal);
             }
         }
-        return (self.instructions.len(), self.status)
+        return (self.instructions.len(), ProgramStatus::Seeking(goal_depth));
     }
 
 
