@@ -9,7 +9,7 @@ pub struct Program {
     pub status: ProgramStatus,
 }
 
-#[derive(Clone,Copy)]
+#[derive(Clone,Copy,PartialEq,Debug)]
 pub enum ProgramStatus {
     Normal,
     Seeking(u64),
