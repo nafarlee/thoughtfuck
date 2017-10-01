@@ -9,7 +9,8 @@ pub struct Program {
     pub status: ProgramStatus,
 }
 
-enum ProgramStatus {
+#[derive(Clone,Copy)]
+pub enum ProgramStatus {
     Normal,
     Seeking(u64),
 }
@@ -89,31 +90,30 @@ impl Program {
     }
 
 
-    fn seek_forward(&mut self, starting_index: usize) -> (usize, bool) {
-        let goal_depth = self.goal_depth.unwrap();
+    fn seek_forward(&mut self, starting_index: usize, goal_depth: u64) -> (usize, ProgramStatus) {
         for index in starting_index..self.instructions.len() {
             match self.instructions[index] {
-                Command::JumpForward => self.current_depth = self.current_depth + 1,
-                Command::JumpBackward => self.current_depth = self.current_depth - 1,
+                Command::JumpForward => self.current_depth += 1,
+                Command::JumpBackward => self.current_depth -= 1,
                 _ => {},
             }
-            if self.current_depth == goal_depth { return (index + 1, false) }
+            if self.current_depth == goal_depth {
+                return (index + 1, ProgramStatus::Normal)
+            }
         }
-        (self.instructions.len(), true)
+        return (self.instructions.len(), self.status)
     }
 
 
-    fn start_jump_forward(&mut self, vm: &VM, index: usize) -> usize {
+    fn start_jump_forward(&mut self, vm: &VM, index: usize) -> (usize, ProgramStatus) {
         match vm.cells[vm.data_pointer] {
             0 => {
-                self.status = ProgramStatus::Seeking(self.current_depth);
-                let (index, still_seeking) = self.seek_forward(index);
-                self.status = if still_seeking { self.status } else { ProgramStatus::Normal };
-                index
+                let goal_depth = self.current_depth;
+                return self.seek_forward(index, goal_depth);
             },
             _ => {
-                self.current_depth = self.current_depth + 1;
-                index + 1
+                self.current_depth += 1;
+                return (index + 1, ProgramStatus::Normal);
             }
         }
     }
