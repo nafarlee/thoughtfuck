@@ -68,8 +68,8 @@ impl Program {
     fn jump_backward (&mut self, vm: &VM, starting_index: usize) -> usize {
         match vm.cells[vm.data_pointer] {
             0 => {
-                self.current_depth = self.current_depth - 1;
-                starting_index + 1
+                self.current_depth -= 1;
+                return starting_index + 1;
             },
             _ => {
                 let goal_depth = self.current_depth;
