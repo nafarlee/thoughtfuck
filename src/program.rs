@@ -34,32 +34,33 @@ impl Program {
 
 
     pub fn execute(&mut self, vm: &mut VM) {
-        if let Some(mut index) = self.instruction_pointer {
-            match self.status {
-                ProgramStatus::Normal => {
-                    while index < self.instructions.len() {
-                        match self.instructions[index] {
-                            Command::JumpForward => {
-                                let (tmp_index, status) = self.start_jump_forward(vm, index);
-                                self.status = status;
-                                index = tmp_index;
-                            },
-                            Command::JumpBackward => index = self.jump_backward(&vm, index),
-                            command => {
-                                vm.apply(command);
-                                index += 1;
-                            }
+        match (self.instruction_pointer, self.status) {
+            (Some(mut index), ProgramStatus::Normal) => {
+                while index < self.instructions.len() {
+                    match self.instructions[index] {
+                        Command::JumpForward => {
+                            let jump_report = self.start_jump_forward(vm, index);
+                            index = jump_report.0;
+                            self.status = jump_report.1;
+                        },
+                        Command::JumpBackward => index = self.jump_backward(&vm, index),
+                        command => {
+                            vm.apply(command);
+                            index += 1;
                         }
-                        self.instruction_pointer = Some(index);
                     }
-                },
-                ProgramStatus::Seeking(goal_depth) => {
-                    let (new_index, new_status) = self.seek_forward(index, goal_depth);
-                    self.instruction_pointer = Some(new_index);
-                    self.status = new_status;
-                    self.execute(vm);
+                    self.instruction_pointer = Some(index);
                 }
-            }
+            },
+
+            (Some(index), ProgramStatus::Seeking(goal_depth)) => {
+                let (new_index, new_status) = self.seek_forward(index, goal_depth);
+                self.instruction_pointer = Some(new_index);
+                self.status = new_status;
+                self.execute(vm);
+            },
+
+            _ => {}
         }
     }
 
