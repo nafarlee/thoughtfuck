@@ -74,12 +74,10 @@ impl Program {
                 let goal_depth = self.current_depth;
                 for index in (0..starting_index).rev() {
                     match self.instructions[index] {
-                        Command::JumpBackward => {
-                            self.current_depth = self.current_depth + 1;
-                        },
+                        Command::JumpBackward => self.current_depth += 1,
                         Command::JumpForward => {
                             if self.current_depth == goal_depth { return index + 1 }
-                            self.current_depth = self.current_depth - 1;
+                            self.current_depth -= 1;
                         },
                         _ => {},
                     }
