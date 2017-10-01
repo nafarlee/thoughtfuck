@@ -3,13 +3,13 @@ use vm::VM;
 
 
 pub struct Program {
-    instructions : Vec<Command>,
+    instructions: Vec<Command>,
     instruction_pointer: Option<usize>,
     current_depth: u64,
     pub status: ProgramStatus,
 }
 
-#[derive(Clone,Copy,PartialEq,Debug)]
+#[derive(Clone, Copy, PartialEq, Debug)]
 pub enum ProgramStatus {
     Normal,
     Seeking(u64),
@@ -17,7 +17,7 @@ pub enum ProgramStatus {
 
 
 impl Program {
-    pub fn new () -> Program {
+    pub fn new() -> Program {
         Program {
             instructions: Vec::new(),
             instruction_pointer: None,
@@ -29,7 +29,9 @@ impl Program {
 
     pub fn append(&mut self, instructions: &[Command]) {
         self.instructions.extend(instructions.iter().cloned());
-        if self.instruction_pointer.is_none() { self.instruction_pointer = Some(0); }
+        if self.instruction_pointer.is_none() {
+            self.instruction_pointer = Some(0);
+        }
     }
 
 
@@ -42,7 +44,7 @@ impl Program {
                             let jump_report = self.start_jump_forward(vm, index);
                             index = jump_report.0;
                             self.status = jump_report.1;
-                        },
+                        }
                         Command::JumpBackward => index = self.jump_backward(&vm, index),
                         command => {
                             vm.apply(command);
@@ -51,40 +53,42 @@ impl Program {
                     }
                 }
                 self.instruction_pointer = Some(index);
-            },
+            }
 
             (Some(index), ProgramStatus::Seeking(goal_depth)) => {
                 let (new_index, new_status) = self.seek_forward(index, goal_depth);
                 self.instruction_pointer = Some(new_index);
                 self.status = new_status;
                 self.execute(vm);
-            },
+            }
 
             _ => {}
         }
     }
 
 
-    fn jump_backward (&mut self, vm: &VM, starting_index: usize) -> usize {
+    fn jump_backward(&mut self, vm: &VM, starting_index: usize) -> usize {
         match vm.cells[vm.data_pointer] {
             0 => {
                 self.current_depth -= 1;
                 return starting_index + 1;
-            },
+            }
             _ => {
                 let goal_depth = self.current_depth;
                 for index in (0..starting_index).rev() {
                     match self.instructions[index] {
                         Command::JumpBackward => self.current_depth += 1,
                         Command::JumpForward => {
-                            if self.current_depth == goal_depth { return index + 1 }
+                            if self.current_depth == goal_depth {
+                                return index + 1;
+                            }
                             self.current_depth -= 1;
-                        },
-                        _ => {},
+                        }
+                        _ => {}
                     }
                 }
                 panic!("No starting brace found!");
-            },
+            }
         }
     }
 
@@ -94,7 +98,7 @@ impl Program {
             match self.instructions[index] {
                 Command::JumpForward => self.current_depth += 1,
                 Command::JumpBackward => self.current_depth -= 1,
-                _ => {},
+                _ => {}
             }
             if self.current_depth == goal_depth {
                 return (index + 1, ProgramStatus::Normal);
@@ -109,7 +113,7 @@ impl Program {
             0 => {
                 let goal_depth = self.current_depth;
                 return self.seek_forward(index, goal_depth);
-            },
+            }
             _ => {
                 self.current_depth += 1;
                 return (index + 1, ProgramStatus::Normal);
@@ -127,10 +131,13 @@ mod tests {
             instruction_pointer: Some(0),
             current_depth: 0,
             status: ProgramStatus::Normal,
-            instructions: vec![ Command::JumpForward
-                              , Command::JumpForward
-                              , Command::JumpBackward
-                              , Command::JumpBackward]};
+            instructions: vec![
+                Command::JumpForward,
+                Command::JumpForward,
+                Command::JumpBackward,
+                Command::JumpBackward,
+            ],
+        };
         let actual = program.seek_forward(0, 0);
         let expected = (4, ProgramStatus::Normal);
         assert_eq!(actual, expected);
@@ -143,9 +150,12 @@ mod tests {
             instruction_pointer: Some(0),
             current_depth: 0,
             status: ProgramStatus::Normal,
-            instructions: vec![ Command::JumpForward
-                              , Command::JumpForward
-                              , Command::JumpBackward]};
+            instructions: vec![
+                Command::JumpForward,
+                Command::JumpForward,
+                Command::JumpBackward,
+            ],
+        };
         let actual = program.seek_forward(0, 0);
         let expected = (3, ProgramStatus::Seeking(0));
         assert_eq!(actual, expected);

@@ -1,4 +1,4 @@
-#[derive(Debug,Clone,PartialEq,Copy)]
+#[derive(Debug, Clone, PartialEq, Copy)]
 pub enum Command {
     JumpForward,
     JumpBackward,
@@ -7,5 +7,5 @@ pub enum Command {
     Increment,
     Decrement,
     RightShift,
-    LeftShift
+    LeftShift,
 }

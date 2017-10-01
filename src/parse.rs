@@ -13,11 +13,11 @@ pub fn parse(s: &str) -> Vec<Command> {
             '-' => Some(Command::Decrement),
             '[' => Some(Command::JumpForward),
             ']' => Some(Command::JumpBackward),
-            _   => None,
+            _ => None,
         };
         match command {
             Some(com) => vec.push(com),
-            None => {},
+            None => {}
         }
     }
     vec

@@ -24,7 +24,7 @@ fn main() {
 }
 
 
-fn repl (mut vm: VM, mut program: Program) -> () {
+fn repl(mut vm: VM, mut program: Program) -> () {
     loop {
         if let ProgramStatus::Normal = program.status {
             print!("tf> ");

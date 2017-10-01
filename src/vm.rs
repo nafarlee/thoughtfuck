@@ -1,20 +1,24 @@
 use std::io;
-use std::io::{Write,Read};
+use std::io::{Write, Read};
 use command::Command;
 
 
 type Cell = u8;
 
-pub struct VM <'a> {
+pub struct VM<'a> {
     pub cells: [Cell; 30_000],
     pub data_pointer: usize,
-    out: &'a mut Write
+    out: &'a mut Write,
 }
 
 
-impl <'a> VM <'a> {
+impl<'a> VM<'a> {
     pub fn new(out: &mut Write) -> VM {
-        VM { cells: [0; 30_000], data_pointer: 0, out }
+        VM {
+            cells: [0; 30_000],
+            data_pointer: 0,
+            out,
+        }
     }
 
 
@@ -27,10 +31,12 @@ impl <'a> VM <'a> {
 
     pub fn input(&mut self) {
         match io::stdin().bytes().next() {
-            Some(res) => match res {
-                Ok(value) => self.cells[self.data_pointer] = value,
-                Err(error) => panic!(error),
-            },
+            Some(res) => {
+                match res {
+                    Ok(value) => self.cells[self.data_pointer] = value,
+                    Err(error) => panic!(error),
+                }
+            }
             None => {}
         }
         println!("");
@@ -43,9 +49,9 @@ impl <'a> VM <'a> {
 
 
     pub fn decrement(&mut self) {
-        self.cells[self.data_pointer] = self.cells[self.data_pointer]
-            .checked_sub(1)
-            .unwrap_or(Cell::max_value());
+        self.cells[self.data_pointer] = self.cells[self.data_pointer].checked_sub(1).unwrap_or(
+            Cell::max_value(),
+        );
     }
 
 
@@ -67,7 +73,7 @@ impl <'a> VM <'a> {
             Command::Decrement => self.decrement(),
             Command::RightShift => self.right_shift(),
             Command::LeftShift => self.left_shift(),
-            _ => {},
+            _ => {}
         }
     }
 }
@@ -122,7 +128,7 @@ mod tests {
 
         let mut stdout = io::stdout();
         let mut vm = VM::new(&mut stdout);
-        vm.data_pointer  = STARTING_POSITION;
+        vm.data_pointer = STARTING_POSITION;
         vm.left_shift();
         assert!(vm.data_pointer == 1);
     }

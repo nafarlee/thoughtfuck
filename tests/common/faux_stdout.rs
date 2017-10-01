@@ -1,9 +1,9 @@
-use std::io::{Write,Result};
+use std::io::{Write, Result};
 use std::str;
 
 
 pub struct FauxStdout {
-    pub buffer: String
+    pub buffer: String,
 }
 
 
