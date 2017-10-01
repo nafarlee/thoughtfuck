@@ -117,3 +117,37 @@ impl Program {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    pub fn test_seek_forward_normal() {
+        let mut program = Program {
+            instruction_pointer: Some(0),
+            current_depth: 0,
+            status: ProgramStatus::Normal,
+            instructions: vec![ Command::JumpForward
+                              , Command::JumpForward
+                              , Command::JumpBackward
+                              , Command::JumpBackward]};
+        let actual = program.seek_forward(0, 0);
+        let expected = (4, ProgramStatus::Normal);
+        assert_eq!(actual, expected);
+    }
+
+
+    #[test]
+    pub fn test_seek_forward_seeking() {
+        let mut program = Program {
+            instruction_pointer: Some(0),
+            current_depth: 0,
+            status: ProgramStatus::Normal,
+            instructions: vec![ Command::JumpForward
+                              , Command::JumpForward
+                              , Command::JumpBackward]};
+        let actual = program.seek_forward(0, 0);
+        let expected = (3, ProgramStatus::Seeking(0));
+        assert_eq!(actual, expected);
+    }
+}
