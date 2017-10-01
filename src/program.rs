@@ -49,8 +49,8 @@ impl Program {
                             index += 1;
                         }
                     }
-                    self.instruction_pointer = Some(index);
                 }
+                self.instruction_pointer = Some(index);
             },
 
             (Some(index), ProgramStatus::Seeking(goal_depth)) => {
