@@ -9,6 +9,7 @@ use std::fs::File;
 
 use vm::VM;
 use program::Program;
+use program::ProgramStatus;
 use parse::parse;
 
 
@@ -25,7 +26,11 @@ fn main() {
 
 fn repl (mut vm: VM, mut program: Program) -> () {
     loop {
-        print!("{}", if program.is_seeking {"... "} else {"tf> "});
+        if let ProgramStatus::Normal = program.status {
+            print!("tf> ");
+        } else {
+            print!("... ");
+        }
         std::io::stdout().flush().unwrap();
 
         let mut line = String::new();
