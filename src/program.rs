@@ -55,8 +55,8 @@ impl Program {
                 self.instruction_pointer = Some(index);
             }
 
-            (Some(index), ProgramStatus::Seeking(goal_depth)) => {
-                let (new_index, new_status) = self.seek_forward(index, goal_depth);
+            (Some(index), ProgramStatus::Seeking(_)) => {
+                let (new_index, new_status) = self.handle_jump_forward(vm, index);
                 self.instruction_pointer = Some(new_index);
                 self.status = new_status;
                 self.execute(vm);
