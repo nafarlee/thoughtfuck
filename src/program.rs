@@ -41,11 +41,11 @@ impl Program {
                 while index < self.instructions.len() {
                     match self.instructions[index] {
                         Command::JumpForward => {
-                            let jump_report = self.start_jump_forward(vm, index);
+                            let jump_report = self.handle_jump_forward(vm, index);
                             index = jump_report.0;
                             self.status = jump_report.1;
                         }
-                        Command::JumpBackward => index = self.jump_backward(&vm, index),
+                        Command::JumpBackward => index = self.handle_jump_backward(&vm, index),
                         command => {
                             vm.apply(command);
                             index += 1;
@@ -67,7 +67,7 @@ impl Program {
     }
 
 
-    fn jump_backward(&mut self, vm: &VM, starting_index: usize) -> usize {
+    fn handle_jump_backward(&mut self, vm: &VM, starting_index: usize) -> usize {
         match vm.cells[vm.data_pointer] {
             0 => {
                 self.current_depth -= 1;
@@ -108,7 +108,7 @@ impl Program {
     }
 
 
-    fn start_jump_forward(&mut self, vm: &VM, index: usize) -> (usize, ProgramStatus) {
+    fn handle_jump_forward(&mut self, vm: &VM, index: usize) -> (usize, ProgramStatus) {
         match vm.cells[vm.data_pointer] {
             0 => {
                 let goal_depth = self.current_depth;
