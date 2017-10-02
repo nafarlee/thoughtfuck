@@ -109,15 +109,21 @@ impl Program {
 
 
     fn handle_jump_forward(&mut self, vm: &VM, index: usize) -> (usize, ProgramStatus) {
-        match vm.cells[vm.data_pointer] {
-            0 => {
+        match (vm.cells[vm.data_pointer], self.status) {
+            (0, ProgramStatus::Normal) => {
                 let goal_depth = self.current_depth;
                 return self.seek_forward(index, goal_depth);
             }
-            _ => {
+
+            (_, ProgramStatus::Normal) => {
                 self.current_depth += 1;
                 return (index + 1, ProgramStatus::Normal);
             }
+
+            (_, ProgramStatus::Seeking(goal)) => {
+                return self.seek_forward(index, goal);
+            }
+
         }
     }
 }
