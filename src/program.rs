@@ -40,11 +40,7 @@ impl Program {
             (Some(mut index), ProgramStatus::Normal) => {
                 while index < self.instructions.len() {
                     match self.instructions[index] {
-                        Command::JumpForward => {
-                            let jump_report = self.handle_jump_forward(vm, index);
-                            index = jump_report.0;
-                            self.status = jump_report.1;
-                        }
+                        Command::JumpForward => self.handle_jump_forward(vm, &mut index),
                         Command::JumpBackward => index = self.handle_jump_backward(&vm, index),
                         command => {
                             vm.apply(command);
@@ -55,10 +51,8 @@ impl Program {
                 self.instruction_pointer = Some(index);
             }
 
-            (Some(index), ProgramStatus::Seeking(_)) => {
-                let (new_index, new_status) = self.handle_jump_forward(vm, index);
-                self.instruction_pointer = Some(new_index);
-                self.status = new_status;
+            (Some(mut index), ProgramStatus::Seeking(_)) => {
+                self.handle_jump_forward(vm, &mut index);
                 self.execute(vm);
             }
 
@@ -93,40 +87,46 @@ impl Program {
     }
 
 
-    fn seek_forward(&mut self, starting_index: usize, goal_depth: u64) -> (usize, ProgramStatus) {
-        for index in starting_index..self.instructions.len() {
-            match self.instructions[index] {
-                Command::JumpForward => self.current_depth += 1,
-                Command::JumpBackward => self.current_depth -= 1,
-                _ => {}
+    fn seek_forward(&mut self, index_ref: &mut usize) {
+        if let ProgramStatus::Seeking(goal_depth) = self.status {
+            for index in (*index_ref)..self.instructions.len() {
+                match self.instructions[index] {
+                    Command::JumpForward => self.current_depth += 1,
+                    Command::JumpBackward => self.current_depth -= 1,
+                    _ => {}
+                }
+                if self.current_depth == goal_depth {
+                    *index_ref = index + 1;
+                    self.status = ProgramStatus::Normal;
+                    return;
+                }
             }
-            if self.current_depth == goal_depth {
-                return (index + 1, ProgramStatus::Normal);
-            }
+
+            *index_ref = self.instructions.len();
+            self.status = ProgramStatus::Seeking(goal_depth);
         }
-        return (self.instructions.len(), ProgramStatus::Seeking(goal_depth));
     }
 
 
-    fn handle_jump_forward(&mut self, vm: &VM, index: usize) -> (usize, ProgramStatus) {
+    fn handle_jump_forward(&mut self, vm: &VM, index: &mut usize) {
         match (vm.cells[vm.data_pointer], self.status) {
             (0, ProgramStatus::Normal) => {
-                let goal_depth = self.current_depth;
-                return self.seek_forward(index, goal_depth);
+                self.status = ProgramStatus::Seeking(self.current_depth);
+                self.seek_forward(index);
             }
 
             (_, ProgramStatus::Normal) => {
+                *index += 1;
                 self.current_depth += 1;
-                return (index + 1, ProgramStatus::Normal);
+                self.status = ProgramStatus::Normal;
             }
 
-            (_, ProgramStatus::Seeking(goal)) => {
-                return self.seek_forward(index, goal);
-            }
+            (_, ProgramStatus::Seeking(_)) => self.seek_forward(index),
 
         }
     }
 }
+
 
 #[cfg(test)]
 mod tests {
@@ -134,9 +134,9 @@ mod tests {
     #[test]
     pub fn test_seek_forward_normal() {
         let mut program = Program {
-            instruction_pointer: Some(0),
+            instruction_pointer: None,
             current_depth: 0,
-            status: ProgramStatus::Normal,
+            status: ProgramStatus::Seeking(0),
             instructions: vec![
                 Command::JumpForward,
                 Command::JumpForward,
@@ -144,26 +144,28 @@ mod tests {
                 Command::JumpBackward,
             ],
         };
-        let actual = program.seek_forward(0, 0);
-        let expected = (4, ProgramStatus::Normal);
-        assert_eq!(actual, expected);
+        let mut index = 0;
+        program.seek_forward(&mut index);
+        assert_eq!(index, 4);
+        assert_eq!(program.status, ProgramStatus::Normal);
     }
 
 
     #[test]
     pub fn test_seek_forward_seeking() {
+        let mut index = 0;
         let mut program = Program {
-            instruction_pointer: Some(0),
+            instruction_pointer: None,
             current_depth: 0,
-            status: ProgramStatus::Normal,
+            status: ProgramStatus::Seeking(0),
             instructions: vec![
                 Command::JumpForward,
                 Command::JumpForward,
                 Command::JumpBackward,
             ],
         };
-        let actual = program.seek_forward(0, 0);
-        let expected = (3, ProgramStatus::Seeking(0));
-        assert_eq!(actual, expected);
+        program.seek_forward(&mut index);
+        assert_eq!(index, 3);
+        assert_eq!(program.status, ProgramStatus::Seeking(0));
     }
 }
