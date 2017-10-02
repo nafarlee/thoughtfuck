@@ -155,7 +155,6 @@ mod tests {
 
     #[test]
     pub fn test_seek_forward_seeking() {
-        let mut index = 0;
         let mut program = Program {
             instruction_pointer: None,
             current_depth: 0,
@@ -166,6 +165,7 @@ mod tests {
                 Command::JumpBackward,
             ],
         };
+        let mut index = 0;
         program.seek_forward(&mut index);
         assert_eq!(index, 3);
         assert_eq!(program.status, ProgramStatus::Seeking(0));
