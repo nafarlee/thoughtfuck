@@ -37,6 +37,11 @@ impl Program {
 
     pub fn execute(&mut self, vm: &mut VM) {
         match (self.instruction_pointer, self.status) {
+            (Some(mut index), ProgramStatus::Seeking(_)) => {
+                self.handle_jump_forward(vm, &mut index);
+                self.execute(vm);
+            }
+
             (Some(mut index), ProgramStatus::Normal) => {
                 while index < self.instructions.len() {
                     match self.instructions[index] {
@@ -48,12 +53,8 @@ impl Program {
                         }
                     }
                 }
-                self.instruction_pointer = Some(index);
-            }
 
-            (Some(mut index), ProgramStatus::Seeking(_)) => {
-                self.handle_jump_forward(vm, &mut index);
-                self.execute(vm);
+                self.instruction_pointer = Some(index);
             }
 
             _ => {}
