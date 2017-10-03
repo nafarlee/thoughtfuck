@@ -40,7 +40,7 @@ impl Program {
             (Some(mut index), ProgramStatus::Seeking(_)) => {
                 self.handle_jump_forward(vm, &mut index);
                 self.instruction_pointer = Some(index);
-                self.execute(vm);
+                if index < self.instructions.len() { self.execute(vm); }
             }
 
             (Some(mut index), ProgramStatus::Normal) => {
