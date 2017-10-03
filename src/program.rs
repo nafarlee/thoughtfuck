@@ -39,6 +39,7 @@ impl Program {
         match (self.instruction_pointer, self.status) {
             (Some(mut index), ProgramStatus::Seeking(_)) => {
                 self.handle_jump_forward(vm, &mut index);
+                self.instruction_pointer = Some(index);
                 self.execute(vm);
             }
 
