@@ -37,7 +37,7 @@ impl Program {
 
     pub fn execute(&mut self, vm: &mut VM) {
         match (self.instruction_pointer, self.status) {
-            (Some(mut index), ProgramStatus::Seeking(_)) => {
+            (Some(index), ProgramStatus::Seeking(_)) => {
                 let (new_index, new_depth, new_status) = self.handle_jump_forward(vm, index);
                 self.instruction_pointer = Some(new_index);
                 self.current_depth = new_depth;
@@ -141,7 +141,7 @@ mod tests {
     use super::*;
     #[test]
     pub fn test_seek_forward_normal() {
-        let mut program = Program {
+        let program = Program {
             instruction_pointer: None,
             current_depth: 0,
             status: ProgramStatus::Seeking(0),
@@ -152,8 +152,7 @@ mod tests {
                 Command::JumpBackward,
             ],
         };
-        let mut index = 0;
-        let (new_index, new_depth, new_status) = program.seek_forward(index);
+        let (new_index, new_depth, new_status) = program.seek_forward(0);
         assert_eq!(new_depth, 0);
         assert_eq!(new_index, 4);
         assert_eq!(new_status, ProgramStatus::Normal);
@@ -162,7 +161,7 @@ mod tests {
 
     #[test]
     pub fn test_seek_forward_seeking() {
-        let mut program = Program {
+        let program = Program {
             instruction_pointer: None,
             current_depth: 0,
             status: ProgramStatus::Seeking(0),
@@ -172,8 +171,7 @@ mod tests {
                 Command::JumpBackward,
             ],
         };
-        let mut index = 0;
-        let (new_index, new_depth, new_status) = program.seek_forward(index);
+        let (new_index, new_depth, new_status) = program.seek_forward(0);
         assert_eq!(new_depth, 1);
         assert_eq!(new_index, 3);
         assert_eq!(new_status, ProgramStatus::Seeking(0));
