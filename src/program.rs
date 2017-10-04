@@ -16,8 +16,8 @@ pub enum ProgramStatus {
 }
 
 
-fn find_by<T, F>(list: &[T], start: Option<usize>, predicate: F) -> Option<usize>
-where F: Fn(&T) -> bool {
+fn find_by<T, F>(list: &[T], start: Option<usize>, mut predicate: F) -> Option<usize>
+where F: FnMut(&T) -> bool {
     let start = start.unwrap_or(0);
     for (offset, element) in list.iter().enumerate() {
         if predicate(element) { return Some(start + offset); }
