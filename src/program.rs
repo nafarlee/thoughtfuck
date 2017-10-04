@@ -38,16 +38,25 @@ impl Program {
     pub fn execute(&mut self, vm: &mut VM) {
         match (self.instruction_pointer, self.status) {
             (Some(mut index), ProgramStatus::Seeking(_)) => {
-                self.handle_jump_forward(vm, &mut index);
-                self.instruction_pointer = Some(index);
-                if index < self.instructions.len() { self.execute(vm); }
+                let (new_index, new_depth, new_status) = self.handle_jump_forward(vm, index);
+                self.instruction_pointer = Some(new_index);
+                self.current_depth = new_depth;
+                self.status = new_status;
+                if new_index < self.instructions.len() { self.execute(vm); }
             }
 
             (Some(mut index), ProgramStatus::Normal) => {
                 while index < self.instructions.len() {
                     match self.instructions[index] {
-                        Command::JumpForward => self.handle_jump_forward(vm, &mut index),
                         Command::JumpBackward => self.handle_jump_backward(vm, &mut index),
+
+                        Command::JumpForward => {
+                            let (new_index, new_depth, new_status) = self.handle_jump_forward(vm, index);
+                            index = new_index;
+                            self.current_depth = new_depth;
+                            self.status = new_status;
+                        }
+
                         command => {
                             vm.apply(command);
                             index += 1;
