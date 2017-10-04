@@ -91,7 +91,7 @@ impl Program {
     }
 
 
-    fn seek_forward(&self, starting_index: usize) -> (usize, ProgramStatus) {
+    fn seek_forward(&self, starting_index: usize) -> (usize, u64, ProgramStatus) {
         match self.status {
             ProgramStatus::Seeking(goal_depth) => {
                 for index in starting_index..self.instructions.len() {
@@ -101,14 +101,16 @@ impl Program {
                         _ => {}
                     }
                     if self.current_depth == goal_depth {
-                        return (index + 1, ProgramStatus::Normal);
+                        return (index + 1, self.current_depth, ProgramStatus::Normal);
                     }
                 }
 
-                return (self.instructions.len(), ProgramStatus::Seeking(goal_depth));
+                return (self.instructions.len()
+                       , self.current_depth
+                       , ProgramStatus::Seeking(goal_depth));
             }
 
-            ProgramStatus::Normal => return (starting_index, self.status)
+            ProgramStatus::Normal => return (starting_index, self.current_depth, self.status)
         }
     }
 
