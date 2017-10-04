@@ -153,9 +153,10 @@ mod tests {
             ],
         };
         let mut index = 0;
-        program.seek_forward(&mut index);
-        assert_eq!(index, 4);
-        assert_eq!(program.status, ProgramStatus::Normal);
+        let (new_index, new_depth, new_status) = program.seek_forward(index);
+        assert_eq!(new_depth, 0);
+        assert_eq!(new_index, 4);
+        assert_eq!(new_status, ProgramStatus::Normal);
     }
 
 
@@ -172,8 +173,9 @@ mod tests {
             ],
         };
         let mut index = 0;
-        program.seek_forward(&mut index);
-        assert_eq!(index, 3);
-        assert_eq!(program.status, ProgramStatus::Seeking(0));
+        let (new_index, new_depth, new_status) = program.seek_forward(index);
+        assert_eq!(new_depth, 1);
+        assert_eq!(new_index, 3);
+        assert_eq!(new_status, ProgramStatus::Seeking(0));
     }
 }
