@@ -67,4 +67,33 @@ impl Program {
             _ => {}
         }
     }
+
+
+    fn attempt_forward_jump(commands: &Vec<Command>, index: usize, depth: u64) -> ProgramPatch {
+        let goal_depth = depth;
+        let mut current_depth = depth;
+
+        let index = find_by(commands, Some(index), |command| {
+            match command {
+                &Command::JumpBackward => current_depth -= 1,
+                &Command::JumpForward => current_depth += 1,
+                _ => {},
+            };
+            return current_depth == goal_depth;
+        });
+
+        return match index {
+            Some(index) => ProgramPatch {
+                instruction_pointer: index,
+                status: ProgramStatus::Normal,
+                current_depth
+            },
+
+            None => ProgramPatch {
+                instruction_pointer: commands.len(),
+                status: ProgramStatus::Seeking(goal_depth),
+                current_depth,
+            }
+        };
+    }
 }
