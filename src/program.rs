@@ -103,13 +103,14 @@ impl Program {
     fn seek_forward(&self, starting_index: usize) -> (usize, u64, ProgramStatus) {
         match self.status {
             ProgramStatus::Seeking(goal_depth) => {
+                let mut depth = self.current_depth;
                 for index in starting_index..self.instructions.len() {
                     match self.instructions[index] {
-                        Command::JumpForward => self.current_depth += 1,
-                        Command::JumpBackward => self.current_depth -= 1,
+                        Command::JumpForward => depth += 1,
+                        Command::JumpBackward => depth  -= 1,
                         _ => {}
                     }
-                    if self.current_depth == goal_depth {
+                    if depth == goal_depth {
                         return (index + 1, self.current_depth, ProgramStatus::Normal);
                     }
                 }
