@@ -36,5 +36,12 @@ impl Program {
 
 
     pub fn execute(&mut self, vm: &mut VM) {
+        match (self.instruction_pointer, self.status) {
+            (Some(index), ProgramStatus::Seeking(goal)) => {}
+
+            (Some(index), ProgramStatus::Normal) => {}
+
+            _ => {}
+        }
     }
 }
