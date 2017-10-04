@@ -37,9 +37,9 @@ impl Program {
 
     pub fn execute(&mut self, vm: &mut VM) {
         match (self.instruction_pointer, self.status) {
-            (Some(index), ProgramStatus::Seeking(goal)) => {}
+            (Some(index), ProgramStatus::Seeking(goal)) if index < self.instructions.len() => {}
 
-            (Some(index), ProgramStatus::Normal) => {}
+            (Some(index), ProgramStatus::Normal) if index < self.instructions.len() => {}
 
             _ => {}
         }
