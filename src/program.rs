@@ -15,6 +15,13 @@ pub enum ProgramStatus {
     Seeking(u64),
 }
 
+#[derive(Clone, Copy, Debug)]
+pub struct ProgramPatch {
+    pub instruction_pointer: usize,
+    pub current_depth: u64,
+    pub status: ProgramStatus,
+}
+
 
 fn find_by<T, F>(list: &[T], start: Option<usize>, mut predicate: F) -> Option<usize>
 where F: FnMut(&T) -> bool {
