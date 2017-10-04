@@ -91,23 +91,24 @@ impl Program {
     }
 
 
-    fn seek_forward(&mut self, index_ref: &mut usize) {
-        if let ProgramStatus::Seeking(goal_depth) = self.status {
-            for index in (*index_ref)..self.instructions.len() {
-                match self.instructions[index] {
-                    Command::JumpForward => self.current_depth += 1,
-                    Command::JumpBackward => self.current_depth -= 1,
-                    _ => {}
+    fn seek_forward(&self, starting_index: usize) -> (usize, ProgramStatus) {
+        match self.status {
+            ProgramStatus::Seeking(goal_depth) => {
+                for index in starting_index..self.instructions.len() {
+                    match self.instructions[index] {
+                        Command::JumpForward => self.current_depth += 1,
+                        Command::JumpBackward => self.current_depth -= 1,
+                        _ => {}
+                    }
+                    if self.current_depth == goal_depth {
+                        return (index + 1, ProgramStatus::Normal);
+                    }
                 }
-                if self.current_depth == goal_depth {
-                    *index_ref = index + 1;
-                    self.status = ProgramStatus::Normal;
-                    return;
-                }
+
+                return (self.instructions.len(), ProgramStatus::Seeking(goal_depth));
             }
 
-            *index_ref = self.instructions.len();
-            self.status = ProgramStatus::Seeking(goal_depth);
+            ProgramStatus::Normal => return (starting_index, self.status)
         }
     }
 
