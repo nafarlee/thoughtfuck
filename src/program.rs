@@ -16,6 +16,16 @@ pub enum ProgramStatus {
 }
 
 
+fn find_by<T, F>(list: &[T], predicate: F, start: Option<usize>) -> Option<usize> where F: Fn(&T) -> bool {
+    let start = start.unwrap_or(0);
+    for (offset, element) in list.iter().enumerate() {
+        if predicate(element) { return Some(start + offset); }
+    }
+
+    return None;
+}
+
+
 impl Program {
     pub fn new() -> Program {
         Program {
