@@ -65,7 +65,7 @@ impl Program {
                 let current_cell = vm.cells[vm.data_pointer];
                 let patch = match (self.instructions[index], self.status) {
                     (_, ProgramStatus::Seeking(goal)) => {
-                        Program::attempt_forward_jump(
+                        Program::forward_jump(
                             &self.instructions,
                             index,
                             goal,
@@ -156,7 +156,7 @@ impl Program {
     }
 
 
-    fn attempt_forward_jump(
+    fn forward_jump(
         commands: &Vec<Command>,
         index: usize,
         goal_depth: u64,
