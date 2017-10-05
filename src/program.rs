@@ -9,11 +9,13 @@ pub struct Program {
     pub status: ProgramStatus,
 }
 
+
 #[derive(Clone, Copy, PartialEq, Debug)]
 pub enum ProgramStatus {
     Normal,
     Seeking(u64),
 }
+
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct ProgramPatch {
@@ -132,6 +134,7 @@ impl Program {
         self.status = patch.status;
         return self;
     }
+
 
     fn backward_jump(commands: &Vec<Command>, start: usize, depth: u64) -> ProgramPatch {
         let goal_depth = depth - 1;
