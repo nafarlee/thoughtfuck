@@ -120,7 +120,6 @@ impl Program {
                     }
                 };
 
-
                 self.update(patch);
                 index = patch.instruction_pointer;
             }
