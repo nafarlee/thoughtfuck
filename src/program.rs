@@ -89,7 +89,7 @@ impl Program {
     fn backward_jump(commands: &Vec<Command>, start: usize, depth: u64) -> ProgramPatch {
         let goal_depth = depth - 1;
         let mut current_depth = depth;
-        for index in (0..start+1).rev() {
+        for index in (0..start).rev() {
             match commands[index] {
                 Command::JumpBackward => current_depth += 1,
                 Command::JumpForward => current_depth -= 1,
