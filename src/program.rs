@@ -150,7 +150,7 @@ impl Program {
         goal_depth: u64,
         mut current_depth: u64,
     ) -> ProgramPatch {
-        let index = find_by(commands, Some(index), |command| {
+        let index = find_by(&commands[index..], Some(index), |command| {
             match command {
                 &Command::JumpBackward => current_depth -= 1,
                 &Command::JumpForward => current_depth += 1,
