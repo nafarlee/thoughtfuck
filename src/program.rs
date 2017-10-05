@@ -76,23 +76,7 @@ impl Program {
 
                     (Command::JumpForward, _) => self.process_jump_forward(index, current_cell),
 
-                    (Command::JumpBackward, _) => {
-                        match current_cell {
-                            0 => ProgramPatch {
-                                instruction_pointer: index + 1,
-                                status: ProgramStatus::Normal,
-                                current_depth: self.current_depth - 1,
-                            },
-
-                            _ => {
-                                Program::backward_jump(
-                                    &self.instructions,
-                                    index,
-                                    self.current_depth,
-                                )
-                            }
-                        }
-                    }
+                    (Command::JumpBackward, _) => self.process_jump_backward(index, current_cell),
 
                     (command, _) => {
                         vm.apply(command);
