@@ -103,10 +103,7 @@ impl Program {
     }
 
 
-    fn attempt_forward_jump(commands: &Vec<Command>, index: usize, depth: u64) -> ProgramPatch {
-        let goal_depth = depth;
-        let mut current_depth = depth;
-
+    fn attempt_forward_jump(commands: &Vec<Command>, index: usize, goal_depth: u64, mut current_depth: u64) -> ProgramPatch {
         let index = find_by(commands, Some(index), |command| {
             match command {
                 &Command::JumpBackward => current_depth -= 1,
