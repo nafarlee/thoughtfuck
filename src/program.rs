@@ -24,10 +24,14 @@ pub struct ProgramPatch {
 
 
 fn find_by<T, F>(list: &[T], start: Option<usize>, mut predicate: F) -> Option<usize>
-where F: FnMut(&T) -> bool {
+where
+    F: FnMut(&T) -> bool,
+{
     let start = start.unwrap_or(0);
     for (offset, element) in list.iter().enumerate() {
-        if predicate(element) { return Some(start + offset); }
+        if predicate(element) {
+            return Some(start + offset);
+        }
     }
 
     return None;
@@ -56,9 +60,14 @@ impl Program {
     pub fn execute(&mut self, vm: &mut VM) {
         match (self.instruction_pointer, self.status) {
             (Some(index), ProgramStatus::Seeking(goal)) if index < self.instructions.len() => {
-                let patch = Program::attempt_forward_jump(&self.instructions, index, goal, self.current_depth);
+                let patch = Program::attempt_forward_jump(
+                    &self.instructions,
+                    index,
+                    goal,
+                    self.current_depth,
+                );
                 println!("SEEKING BRANCH\n{:?}\n", patch);
-                return self.update(patch).execute(vm)
+                return self.update(patch).execute(vm);
             }
 
             (Some(start), ProgramStatus::Normal) if start < self.instructions.len() => {
@@ -70,10 +79,14 @@ impl Program {
                                 continue;
                             }
 
-                            let patch = Program::backward_jump(&self.instructions, index, self.current_depth);
+                            let patch = Program::backward_jump(
+                                &self.instructions,
+                                index,
+                                self.current_depth,
+                            );
                             println!("BACKWARD BRANCH\n{:?}\n", patch);
                             return self.update(patch).execute(vm);
-                        },
+                        }
 
                         Command::JumpForward => {
                             if vm.cells[vm.data_pointer] != 0 {
@@ -81,14 +94,19 @@ impl Program {
                                 continue;
                             }
 
-                            let patch = Program::attempt_forward_jump(&self.instructions, index, self.current_depth, self.current_depth);
+                            let patch = Program::attempt_forward_jump(
+                                &self.instructions,
+                                index,
+                                self.current_depth,
+                                self.current_depth,
+                            );
                             println!("FORWARD BRANCH\n{:?}\n", patch);
                             return self.update(patch).execute(vm);
-                        },
+                        }
 
                         command if start < self.instructions.len() => vm.apply(command),
 
-                        _ => {},
+                        _ => {}
                     }
                 }
             }
@@ -98,7 +116,7 @@ impl Program {
     }
 
 
-    fn update (&mut self, patch: ProgramPatch) -> &mut Self {
+    fn update(&mut self, patch: ProgramPatch) -> &mut Self {
         self.instruction_pointer = Some(patch.instruction_pointer);
         self.current_depth = patch.current_depth;
         self.status = patch.status;
@@ -112,22 +130,31 @@ impl Program {
             match commands[index] {
                 Command::JumpBackward => current_depth += 1,
                 Command::JumpForward => current_depth -= 1,
-                _ => {},
+                _ => {}
             }
             if goal_depth == current_depth {
-                return ProgramPatch { instruction_pointer: index, status: ProgramStatus::Normal, current_depth };
+                return ProgramPatch {
+                    instruction_pointer: index,
+                    status: ProgramStatus::Normal,
+                    current_depth,
+                };
             }
         }
         panic!("No opening bracket found?");
     }
 
 
-    fn attempt_forward_jump(commands: &Vec<Command>, index: usize, goal_depth: u64, mut current_depth: u64) -> ProgramPatch {
+    fn attempt_forward_jump(
+        commands: &Vec<Command>,
+        index: usize,
+        goal_depth: u64,
+        mut current_depth: u64,
+    ) -> ProgramPatch {
         let index = find_by(commands, Some(index), |command| {
             match command {
                 &Command::JumpBackward => current_depth -= 1,
                 &Command::JumpForward => current_depth += 1,
-                _ => {},
+                _ => {}
             };
             return current_depth == goal_depth;
         });
@@ -136,14 +163,14 @@ impl Program {
             Some(index) => ProgramPatch {
                 instruction_pointer: index,
                 status: ProgramStatus::Normal,
-                current_depth
+                current_depth,
             },
 
             None => ProgramPatch {
                 instruction_pointer: commands.len(),
                 status: ProgramStatus::Seeking(goal_depth),
                 current_depth,
-            }
+            },
         };
     }
 }
