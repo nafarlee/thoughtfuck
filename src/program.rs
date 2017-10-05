@@ -58,60 +58,70 @@ impl Program {
 
 
     pub fn execute(&mut self, vm: &mut VM) {
-        match (self.instruction_pointer, self.status) {
-            (Some(index), ProgramStatus::Seeking(goal)) if index < self.instructions.len() => {
-                let patch = Program::attempt_forward_jump(
-                    &self.instructions,
-                    index,
-                    goal,
-                    self.current_depth,
-                );
-                println!("SEEKING BRANCH\n{:?}\n", patch);
-                return self.update(patch).execute(vm);
-            }
-
-            (Some(start), ProgramStatus::Normal) if start < self.instructions.len() => {
-                for index in start..self.instructions.len() {
-                    match self.instructions[index] {
-                        Command::JumpBackward => {
-                            if vm.cells[vm.data_pointer] == 0 {
-                                self.current_depth -= 1;
-                                continue;
-                            }
-
-                            let patch = Program::backward_jump(
-                                &self.instructions,
-                                index,
-                                self.current_depth,
-                            );
-                            println!("BACKWARD BRANCH\n{:?}\n", patch);
-                            return self.update(patch).execute(vm);
-                        }
-
-                        Command::JumpForward => {
-                            if vm.cells[vm.data_pointer] != 0 {
-                                self.current_depth += 1;
-                                continue;
-                            }
-
-                            let patch = Program::attempt_forward_jump(
-                                &self.instructions,
-                                index,
-                                self.current_depth,
-                                self.current_depth,
-                            );
-                            println!("FORWARD BRANCH\n{:?}\n", patch);
-                            return self.update(patch).execute(vm);
-                        }
-
-                        command if start < self.instructions.len() => vm.apply(command),
-
-                        _ => {}
+        if let Some(mut index) = self.instruction_pointer {
+            while index < self.instructions.len() {
+                let current_cell = vm.cells[vm.data_pointer];
+                let patch = match (self.instructions[index], self.status) {
+                    (_, ProgramStatus::Seeking(goal)) => {
+                        Program::attempt_forward_jump(
+                            &self.instructions,
+                            index,
+                            goal,
+                            self.current_depth,
+                        )
                     }
-                }
-            }
 
-            _ => {}
+                    (Command::JumpForward, _) => {
+                        match current_cell {
+                            0 => {
+                                Program::attempt_forward_jump(
+                                    &self.instructions,
+                                    index,
+                                    self.current_depth,
+                                    self.current_depth,
+                                )
+                            }
+
+                            _ => ProgramPatch {
+                                instruction_pointer: index + 1,
+                                status: ProgramStatus::Normal,
+                                current_depth: self.current_depth + 1,
+                            },
+                        }
+                    }
+
+                    (Command::JumpBackward, _) => {
+                        match current_cell {
+                            0 => ProgramPatch {
+                                instruction_pointer: index + 1,
+                                status: ProgramStatus::Normal,
+                                current_depth: self.current_depth - 1,
+                            },
+
+                            _ => {
+                                Program::backward_jump(
+                                    &self.instructions,
+                                    index,
+                                    self.current_depth,
+                                )
+                            }
+                        }
+                    }
+
+                    (command, _) => {
+                        vm.apply(command);
+                        ProgramPatch {
+                            status: ProgramStatus::Normal,
+                            current_depth: self.current_depth,
+                            instruction_pointer: index + 1,
+                        }
+                    }
+                };
+
+
+                self.update(patch);
+                index = patch.instruction_pointer;
+            }
         }
     }
 
