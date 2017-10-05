@@ -56,20 +56,39 @@ impl Program {
     pub fn execute(&mut self, vm: &mut VM) {
         match (self.instruction_pointer, self.status) {
             (Some(index), ProgramStatus::Seeking(goal)) if index < self.instructions.len() => {
-
+                let patch = Program::attempt_forward_jump(&self.instructions, index, goal, self.current_depth);
+                println!("SEEKING BRANCH\n{:?}\n", patch);
+                return self.update(patch).execute(vm)
             }
 
             (Some(start), ProgramStatus::Normal) if start < self.instructions.len() => {
                 for index in start..self.instructions.len() {
                     match self.instructions[index] {
-                        Command::JumpBackward => {},
+                        Command::JumpBackward => {
+                            if vm.cells[vm.data_pointer] == 0 {
+                                self.current_depth -= 1;
+                                continue;
+                            }
 
-                        Command::JumpForward => {
-                            let patch = Program::attempt_forward_jump(&self.instructions, index, self.current_depth);
+                            let patch = Program::backward_jump(&self.instructions, index, self.current_depth);
+                            println!("BACKWARD BRANCH\n{:?}\n", patch);
                             return self.update(patch).execute(vm);
                         },
 
-                        command => vm.apply(command),
+                        Command::JumpForward => {
+                            if vm.cells[vm.data_pointer] != 0 {
+                                self.current_depth += 1;
+                                continue;
+                            }
+
+                            let patch = Program::attempt_forward_jump(&self.instructions, index, self.current_depth, self.current_depth);
+                            println!("FORWARD BRANCH\n{:?}\n", patch);
+                            return self.update(patch).execute(vm);
+                        },
+
+                        command if start < self.instructions.len() => vm.apply(command),
+
+                        _ => {},
                     }
                 }
             }
