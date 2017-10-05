@@ -199,7 +199,7 @@ impl Program {
 mod tests {
     use super::*;
     #[test]
-    fn attempt_forward_jump() {
+    fn forward_jump() {
         let commands = vec![
             Command::JumpForward,
             Command::JumpForward,
@@ -208,7 +208,7 @@ mod tests {
         let index = 0;
         let goal_depth = 0;
         let current_depth = 0;
-        let actual = Program::attempt_forward_jump(&commands, index, goal_depth, current_depth);
+        let actual = Program::forward_jump(&commands, index, goal_depth, current_depth);
         assert_eq!(
             actual,
             ProgramPatch {
