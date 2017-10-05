@@ -74,24 +74,7 @@ impl Program {
                         )
                     }
 
-                    (Command::JumpForward, _) => {
-                        match current_cell {
-                            0 => {
-                                Program::attempt_forward_jump(
-                                    &self.instructions,
-                                    index,
-                                    self.current_depth,
-                                    self.current_depth,
-                                )
-                            }
-
-                            _ => ProgramPatch {
-                                instruction_pointer: index + 1,
-                                status: ProgramStatus::Normal,
-                                current_depth: self.current_depth + 1,
-                            },
-                        }
-                    }
+                    (Command::JumpForward, _) => self.process_jump_forward(index, current_cell),
 
                     (Command::JumpBackward, _) => {
                         match current_cell {
