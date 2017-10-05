@@ -86,6 +86,22 @@ impl Program {
         return self;
     }
 
+    fn backward_jump(commands: &Vec<Command>, start: usize, depth: u64) -> ProgramPatch {
+        let goal_depth = depth - 1;
+        let mut current_depth = depth;
+        for index in (0..start+1).rev() {
+            match commands[index] {
+                Command::JumpBackward => current_depth += 1,
+                Command::JumpForward => current_depth -= 1,
+                _ => {},
+            }
+            if goal_depth == current_depth {
+                return ProgramPatch { instruction_pointer: index, status: ProgramStatus::Normal, current_depth };
+            }
+        }
+        panic!("No opening bracket found?");
+    }
+
 
     fn attempt_forward_jump(commands: &Vec<Command>, index: usize, depth: u64) -> ProgramPatch {
         let goal_depth = depth;
