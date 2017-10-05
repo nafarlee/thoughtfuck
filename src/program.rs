@@ -15,7 +15,7 @@ pub enum ProgramStatus {
     Seeking(u64),
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct ProgramPatch {
     pub instruction_pointer: usize,
     pub current_depth: u64,
