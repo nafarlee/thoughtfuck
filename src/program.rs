@@ -69,6 +69,14 @@ impl Program {
     }
 
 
+    fn update (&mut self, patch: ProgramPatch) -> &mut Self {
+        self.instruction_pointer = Some(patch.instruction_pointer);
+        self.current_depth = patch.current_depth;
+        self.status = patch.status;
+        return self;
+    }
+
+
     fn attempt_forward_jump(commands: &Vec<Command>, index: usize, depth: u64) -> ProgramPatch {
         let goal_depth = depth;
         let mut current_depth = depth;
