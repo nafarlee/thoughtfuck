@@ -1,5 +1,6 @@
 use command::Command;
 use vm::VM;
+use vm::Cell;
 
 
 pub struct Program {
@@ -123,6 +124,26 @@ impl Program {
                 self.update(patch);
                 index = patch.instruction_pointer;
             }
+        }
+    }
+
+
+    fn process_jump_forward(&self, index: usize, current_cell: Cell) -> ProgramPatch {
+        match current_cell {
+            0 => {
+                Program::forward_jump(
+                    &self.instructions,
+                    index,
+                    self.current_depth,
+                    self.current_depth,
+                )
+            }
+
+            _ => ProgramPatch {
+                instruction_pointer: index + 1,
+                status: ProgramStatus::Normal,
+                current_depth: self.current_depth + 1,
+            },
         }
     }
 
