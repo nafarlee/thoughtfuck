@@ -134,9 +134,9 @@ impl Program {
             }
             if goal_depth == current_depth {
                 return ProgramPatch {
-                    instruction_pointer: index,
+                    instruction_pointer: index + 1,
                     status: ProgramStatus::Normal,
-                    current_depth,
+                    current_depth: current_depth + 1,
                 };
             }
         }
