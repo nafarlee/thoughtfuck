@@ -61,6 +61,16 @@ impl Program {
 
             (Some(start), ProgramStatus::Normal) if start < self.instructions.len() => {
                 for index in start..self.instructions.len() {
+                    match self.instructions[index] {
+                        Command::JumpBackward => {},
+
+                        Command::JumpForward => {
+                            let patch = Program::attempt_forward_jump(&self.instructions, index, self.current_depth);
+                            return self.update(patch).execute(vm);
+                        },
+
+                        command => vm.apply(command),
+                    }
                 }
             }
 
