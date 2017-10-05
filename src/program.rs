@@ -161,7 +161,7 @@ impl Program {
 
         return match index {
             Some(index) => ProgramPatch {
-                instruction_pointer: index,
+                instruction_pointer: index + 1,
                 status: ProgramStatus::Normal,
                 current_depth,
             },
