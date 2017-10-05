@@ -111,6 +111,25 @@ impl Program {
     }
 
 
+    fn process_jump_backward(&self, index: usize, current_cell: Cell) -> ProgramPatch {
+        match current_cell {
+            0 => ProgramPatch {
+                instruction_pointer: index + 1,
+                status: ProgramStatus::Normal,
+                current_depth: self.current_depth - 1,
+            },
+
+            _ => {
+                Program::backward_jump(
+                    &self.instructions,
+                    index,
+                    self.current_depth,
+                )
+            }
+        }
+    }
+
+
     fn process_jump_forward(&self, index: usize, current_cell: Cell) -> ProgramPatch {
         match current_cell {
             0 => {
