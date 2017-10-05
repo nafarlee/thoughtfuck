@@ -3,7 +3,7 @@ use std::io::{Write, Read};
 use command::Command;
 
 
-type Cell = u8;
+pub type Cell = u8;
 
 pub struct VM<'a> {
     pub cells: [Cell; 30_000],
