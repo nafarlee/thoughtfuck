@@ -181,15 +181,22 @@ mod tests {
     use super::*;
     #[test]
     fn attempt_forward_jump() {
-        let commands = vec![Command::JumpForward, Command::JumpForward, Command::JumpBackward];
+        let commands = vec![
+            Command::JumpForward,
+            Command::JumpForward,
+            Command::JumpBackward,
+        ];
         let index = 0;
         let goal_depth = 0;
         let current_depth = 0;
         let actual = Program::attempt_forward_jump(&commands, index, goal_depth, current_depth);
-        assert_eq!(actual, ProgramPatch {
-            instruction_pointer: 3,
-            current_depth: 1,
-            status: ProgramStatus::Seeking(0),
-        })
+        assert_eq!(
+            actual,
+            ProgramPatch {
+                instruction_pointer: 3,
+                current_depth: 1,
+                status: ProgramStatus::Seeking(0),
+            }
+        )
     }
 }
