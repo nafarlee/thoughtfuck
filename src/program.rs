@@ -1,6 +1,6 @@
-use command::Command;
-use vm::VM;
-use vm::Cell;
+use crate::command::Command;
+use crate::vm::VM;
+use crate::vm::Cell;
 
 
 pub struct Program {

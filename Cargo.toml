@@ -2,5 +2,6 @@
 name = "thoughtfuck"
 version = "0.1.0"
 authors = ["nafarlee"]
+edition = "2024"
 
 [dependencies]

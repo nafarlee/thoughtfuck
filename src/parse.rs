@@ -1,4 +1,4 @@
-use command::Command;
+use crate::command::Command;
 
 
 pub fn parse(s: &str) -> Vec<Command> {

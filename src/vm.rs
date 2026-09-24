@@ -1,6 +1,6 @@
 use std::io;
 use std::io::{Write, Read};
-use command::Command;
+use crate::command::Command;
 
 
 pub type Cell = u8;
@@ -8,12 +8,12 @@ pub type Cell = u8;
 pub struct VM<'a> {
     pub cells: [Cell; 30_000],
     pub data_pointer: usize,
-    out: &'a mut Write,
+    out: &'a mut dyn Write,
 }
 
 
 impl<'a> VM<'a> {
-    pub fn new(out: &mut Write) -> VM {
+    pub fn new(out: &mut dyn Write) -> VM<'_> {
         VM {
             cells: [0; 30_000],
             data_pointer: 0,
@@ -34,7 +34,7 @@ impl<'a> VM<'a> {
             Some(res) => {
                 match res {
                     Ok(value) => self.cells[self.data_pointer] = value,
-                    Err(error) => panic!(error),
+                    Err(error) => panic!("{}", error),
                 }
             }
             None => {}

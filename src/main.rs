@@ -37,7 +37,7 @@ fn repl(mut vm: VM, mut program: Program) -> () {
         let commands = match std::io::stdin().read_line(&mut line) {
             Ok(0) => break,
             Ok(_) => parse(&line),
-            Err(error) => panic!(error),
+            Err(error) => panic!("{}", error),
         };
         program.append(&commands);
         program.execute(&mut vm);
