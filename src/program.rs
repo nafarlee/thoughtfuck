@@ -17,17 +17,9 @@ pub enum ProgramStatus {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
-pub enum StackPatch {
+enum StackPatch {
     Pop,
     Push(usize),
-}
-
-#[derive(Clone, Copy, Debug, PartialEq)]
-pub struct ProgramPatch {
-    pub instruction_pointer: usize,
-    pub jump_stack: Option<StackPatch>,
-    pub jump_table: Option<(usize, usize)>,
-    pub status: ProgramStatus,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
