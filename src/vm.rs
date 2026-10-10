@@ -19,6 +19,10 @@ impl<'a> VM<'a> {
         }
     }
 
+    pub fn get(&self) -> Cell {
+        return self.cells[self.data_pointer];
+    }
+
     pub fn output(&mut self) {
         self.out
             .write_fmt(format_args!("{}", self.cells[self.data_pointer] as char))
