@@ -50,7 +50,7 @@ impl<'a> VM<'a> {
 
     pub fn decrement(&mut self) {
         self.cells[self.data_pointer] = self.cells[self.data_pointer].checked_sub(1).unwrap_or(
-            Cell::max_value(),
+            Cell::MAX,
         );
     }
 
