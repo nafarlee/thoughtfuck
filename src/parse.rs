@@ -1,6 +1,5 @@
 use crate::command::Command;
 
-
 pub fn parse(s: &str) -> Vec<Command> {
     let mut vec = Vec::new();
     for c in s.chars() {
@@ -22,7 +21,6 @@ pub fn parse(s: &str) -> Vec<Command> {
     }
     vec
 }
-
 
 #[cfg(test)]
 mod tests {

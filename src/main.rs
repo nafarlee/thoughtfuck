@@ -2,16 +2,15 @@ extern crate thoughtfuck;
 
 use thoughtfuck::*;
 
-use std::io::{Write, Read};
 use std::env;
-use std::path::Path;
 use std::fs::File;
+use std::io::{Read, Write};
+use std::path::Path;
 
-use vm::VM;
+use parse::parse;
 use program::Program;
 use program::ProgramStatus;
-use parse::parse;
-
+use vm::VM;
 
 fn main() {
     let mut stdout = std::io::stdout();
@@ -22,7 +21,6 @@ fn main() {
         Some(arg) => interpreter(arg, vm, program),
     }
 }
-
 
 fn repl(mut vm: VM, mut program: Program) -> () {
     loop {
@@ -43,7 +41,6 @@ fn repl(mut vm: VM, mut program: Program) -> () {
         program.execute(&mut vm);
     }
 }
-
 
 fn interpreter(arg: String, mut vm: VM, mut program: Program) -> () {
     let path = Path::new(&arg);

@@ -1,12 +1,11 @@
 mod faux_stdout;
 
 use self::faux_stdout::FauxStdout;
-use std::io::Read;
 use std::fs::File;
-use thoughtfuck::vm::VM;
-use thoughtfuck::program::Program;
+use std::io::Read;
 use thoughtfuck::parse::parse;
-
+use thoughtfuck::program::Program;
+use thoughtfuck::vm::VM;
 
 fn read_file(filename: &str) -> String {
     let mut file = File::open(filename).unwrap();
@@ -14,7 +13,6 @@ fn read_file(filename: &str) -> String {
     file.read_to_string(&mut source).unwrap();
     source
 }
-
 
 pub fn test_output(input_filename: &str, expected_answer_filename: &str) {
     let source = read_file(input_filename);

@@ -1,7 +1,6 @@
-use std::io;
-use std::io::{Write, Read};
 use crate::command::Command;
-
+use std::io;
+use std::io::{Read, Write};
 
 pub type Cell = u8;
 
@@ -10,7 +9,6 @@ pub struct VM<'a> {
     pub data_pointer: usize,
     out: &'a mut dyn Write,
 }
-
 
 impl<'a> VM<'a> {
     pub fn new(out: &mut dyn Write) -> VM<'_> {
@@ -21,49 +19,40 @@ impl<'a> VM<'a> {
         }
     }
 
-
     pub fn output(&mut self) {
         self.out
             .write_fmt(format_args!("{}", self.cells[self.data_pointer] as char))
             .expect("Could not output current byte");
     }
 
-
     pub fn input(&mut self) {
         match io::stdin().bytes().next() {
-            Some(res) => {
-                match res {
-                    Ok(value) => self.cells[self.data_pointer] = value,
-                    Err(error) => panic!("{}", error),
-                }
-            }
+            Some(res) => match res {
+                Ok(value) => self.cells[self.data_pointer] = value,
+                Err(error) => panic!("{}", error),
+            },
             None => {}
         }
         println!("");
     }
 
-
     pub fn increment(&mut self) {
         self.cells[self.data_pointer] = self.cells[self.data_pointer].checked_add(1).unwrap_or(0);
     }
 
-
     pub fn decrement(&mut self) {
-        self.cells[self.data_pointer] = self.cells[self.data_pointer].checked_sub(1).unwrap_or(
-            Cell::MAX,
-        );
+        self.cells[self.data_pointer] = self.cells[self.data_pointer]
+            .checked_sub(1)
+            .unwrap_or(Cell::MAX);
     }
-
 
     pub fn right_shift(&mut self) {
         self.data_pointer += 1;
     }
 
-
     pub fn left_shift(&mut self) {
         self.data_pointer -= 1;
     }
-
 
     pub fn apply(&mut self, command: Command) {
         match command {
@@ -78,7 +67,6 @@ impl<'a> VM<'a> {
     }
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -91,7 +79,6 @@ mod tests {
         assert!(vm.cells[0] == 0);
     }
 
-
     #[test]
     fn test_increment() {
         let mut stdout = io::stdout();
@@ -99,7 +86,6 @@ mod tests {
         vm.increment();
         assert!(vm.cells[0] == 1);
     }
-
 
     #[test]
     fn test_decrement() {
@@ -112,7 +98,6 @@ mod tests {
         assert!(vm.cells[0] == STARTING_VALUE - 1);
     }
 
-
     #[test]
     fn test_right_shift() {
         let mut stdout = io::stdout();
@@ -120,7 +105,6 @@ mod tests {
         vm.right_shift();
         assert!(vm.data_pointer == 1);
     }
-
 
     #[test]
     fn test_left_shift() {

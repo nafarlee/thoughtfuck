@@ -1,18 +1,17 @@
-use std::io::{Write, Result};
+use std::io::{Result, Write};
 use std::str;
-
 
 pub struct FauxStdout {
     pub buffer: String,
 }
 
-
 impl FauxStdout {
     pub fn new() -> FauxStdout {
-        FauxStdout { buffer: String::new() }
+        FauxStdout {
+            buffer: String::new(),
+        }
     }
 }
-
 
 impl Write for FauxStdout {
     fn write(&mut self, buf: &[u8]) -> Result<usize> {
