@@ -25,7 +25,7 @@ impl<'a> VM<'a> {
 
     pub fn output(&mut self) {
         self.out
-            .write_fmt(format_args!("{}", self.get() as char))
+            .write_all(&[self.get()])
             .expect("Could not output current byte");
     }
 
