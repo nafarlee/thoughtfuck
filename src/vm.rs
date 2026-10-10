@@ -5,8 +5,8 @@ use std::io::{Read, Write};
 pub type Cell = u8;
 
 pub struct VM<'a> {
-    pub cells: [Cell; 30_000],
-    pub data_pointer: usize,
+    cells: [Cell; 30_000],
+    data_pointer: usize,
     out: &'a mut dyn Write,
 }
 
@@ -25,7 +25,7 @@ impl<'a> VM<'a> {
 
     pub fn output(&mut self) {
         self.out
-            .write_fmt(format_args!("{}", self.cells[self.data_pointer] as char))
+            .write_fmt(format_args!("{}", self.get() as char))
             .expect("Could not output current byte");
     }
 
@@ -41,13 +41,11 @@ impl<'a> VM<'a> {
     }
 
     pub fn increment(&mut self) {
-        self.cells[self.data_pointer] = self.cells[self.data_pointer].checked_add(1).unwrap_or(0);
+        self.cells[self.data_pointer] = self.get().checked_add(1).unwrap_or(0);
     }
 
     pub fn decrement(&mut self) {
-        self.cells[self.data_pointer] = self.cells[self.data_pointer]
-            .checked_sub(1)
-            .unwrap_or(Cell::MAX);
+        self.cells[self.data_pointer] = self.get().checked_sub(1).unwrap_or(Cell::MAX);
     }
 
     pub fn right_shift(&mut self) {

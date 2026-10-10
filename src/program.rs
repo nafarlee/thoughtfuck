@@ -80,7 +80,7 @@ impl Program {
             }
 
             (Command::JumpForward, ProgramStatus::Normal) => {
-                match (vm.cells[vm.data_pointer], self.jump_table.get(&index)) {
+                match (vm.get(), self.jump_table.get(&index)) {
                     (0, Some(end)) => Some(Plan {
                         status: ProgramStatus::Normal,
                         instruction_pointer: end + 1,
@@ -110,7 +110,7 @@ impl Program {
                     .jump_stack
                     .last()
                     .expect("Found ']' without a matching '['");
-                match vm.cells[vm.data_pointer] {
+                match vm.get() {
                     0 => Some(Plan {
                         status: ProgramStatus::Normal,
                         instruction_pointer: index + 1,
