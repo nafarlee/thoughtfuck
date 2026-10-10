@@ -30,6 +30,15 @@ pub struct ProgramPatch {
     pub status: ProgramStatus,
 }
 
+#[derive(Clone, Copy, Debug, PartialEq)]
+struct Plan {
+    pub instruction_pointer: usize,
+    pub jump_stack: Option<StackPatch>,
+    pub jump_table: Option<(usize, usize)>,
+    pub status: ProgramStatus,
+    pub command: Option<Command>,
+}
+
 impl Program {
     pub fn new() -> Program {
         Program {
@@ -45,6 +54,103 @@ impl Program {
         self.instructions.extend(instructions.iter().cloned());
         if self.instruction_pointer.is_none() {
             self.instruction_pointer = Some(0);
+        }
+    }
+
+    fn plan(&self, vm: &VM) -> Option<Plan> {
+        let index = self.instruction_pointer?;
+        match (self.instructions[index], self.status) {
+            (Command::JumpForward, ProgramStatus::Seeking(goal)) => Some(Plan {
+                status: ProgramStatus::Seeking(goal),
+                instruction_pointer: index + 1,
+                jump_stack: Some(StackPatch::Push(index)),
+                jump_table: None,
+                command: None,
+            }),
+
+            (Command::JumpBackward, ProgramStatus::Seeking(goal)) => {
+                let start = self
+                    .jump_stack
+                    .last()
+                    .expect("Found ']' without a matching '['");
+                let status = if goal + 1 == self.jump_stack.len() {
+                    ProgramStatus::Normal
+                } else {
+                    ProgramStatus::Seeking(goal)
+                };
+                Some(Plan {
+                    status: status,
+                    instruction_pointer: index + 1,
+                    jump_stack: Some(StackPatch::Pop),
+                    jump_table: Some((*start, index)),
+                    command: None,
+                })
+            }
+
+            (Command::JumpForward, ProgramStatus::Normal) => {
+                match (vm.cells[vm.data_pointer], self.jump_table.get(&index)) {
+                    (0, Some(end)) => Some(Plan {
+                        status: ProgramStatus::Normal,
+                        instruction_pointer: end + 1,
+                        jump_stack: None,
+                        jump_table: None,
+                        command: None,
+                    }),
+                    (0, None) => Some(Plan {
+                        status: ProgramStatus::Seeking(self.jump_stack.len()),
+                        instruction_pointer: index + 1,
+                        jump_stack: Some(StackPatch::Push(index)),
+                        jump_table: None,
+                        command: None,
+                    }),
+                    (_, _) => Some(Plan {
+                        status: ProgramStatus::Normal,
+                        instruction_pointer: index + 1,
+                        jump_stack: Some(StackPatch::Push(index)),
+                        jump_table: None,
+                        command: None,
+                    }),
+                }
+            }
+
+            (Command::JumpBackward, ProgramStatus::Normal) => {
+                let start = self
+                    .jump_stack
+                    .last()
+                    .expect("Found ']' without a matching '['");
+                match vm.cells[vm.data_pointer] {
+                    0 => Some(Plan {
+                        status: ProgramStatus::Normal,
+                        instruction_pointer: index + 1,
+                        jump_stack: Some(StackPatch::Pop),
+                        jump_table: Some((*start, index)),
+                        command: None,
+                    }),
+                    _ => Some(Plan {
+                        status: ProgramStatus::Normal,
+                        instruction_pointer: start + 1,
+                        jump_stack: None,
+                        jump_table: Some((*start, index)),
+                        command: None,
+                    }),
+                }
+            }
+
+            (command, ProgramStatus::Normal) => Some(Plan {
+                status: ProgramStatus::Normal,
+                instruction_pointer: index + 1,
+                jump_stack: None,
+                jump_table: None,
+                command: Some(command),
+            }),
+
+            (_, ProgramStatus::Seeking(goal)) => Some(Plan {
+                status: ProgramStatus::Seeking(goal),
+                instruction_pointer: index + 1,
+                jump_stack: None,
+                jump_table: None,
+                command: None,
+            }),
         }
     }
 
