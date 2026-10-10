@@ -155,107 +155,25 @@ impl Program {
     }
 
     pub fn execute(&mut self, vm: &mut VM) {
-        if let Some(mut index) = self.instruction_pointer {
-            while index < self.instructions.len() {
-                let current_cell = vm.cells[vm.data_pointer];
-                let patch = match (self.instructions[index], self.status) {
-                    (Command::JumpForward, ProgramStatus::Seeking(goal)) => ProgramPatch {
-                        status: ProgramStatus::Seeking(goal),
-                        instruction_pointer: index + 1,
-                        jump_stack: Some(StackPatch::Push(index)),
-                        jump_table: None,
-                    },
-
-                    (Command::JumpBackward, ProgramStatus::Seeking(goal)) => {
-                        let start = self
-                            .jump_stack
-                            .last()
-                            .expect("Found ']' without a matching '['");
-                        let status = if goal + 1 == self.jump_stack.len() {
-                            ProgramStatus::Normal
-                        } else {
-                            ProgramStatus::Seeking(goal)
-                        };
-                        ProgramPatch {
-                            status: status,
-                            instruction_pointer: index + 1,
-                            jump_stack: Some(StackPatch::Pop),
-                            jump_table: Some((*start, index)),
-                        }
-                    }
-
-                    (Command::JumpForward, ProgramStatus::Normal) => {
-                        match (current_cell, self.jump_table.get(&index)) {
-                            (0, Some(end)) => ProgramPatch {
-                                status: ProgramStatus::Normal,
-                                instruction_pointer: end + 1,
-                                jump_stack: None,
-                                jump_table: None,
-                            },
-                            (0, None) => ProgramPatch {
-                                status: ProgramStatus::Seeking(self.jump_stack.len()),
-                                instruction_pointer: index + 1,
-                                jump_stack: Some(StackPatch::Push(index)),
-                                jump_table: None,
-                            },
-                            (_, _) => ProgramPatch {
-                                status: ProgramStatus::Normal,
-                                instruction_pointer: index + 1,
-                                jump_stack: Some(StackPatch::Push(index)),
-                                jump_table: None,
-                            },
-                        }
-                    }
-
-                    (Command::JumpBackward, ProgramStatus::Normal) => {
-                        let start = self
-                            .jump_stack
-                            .last()
-                            .expect("Found ']' without a matching '['");
-                        match current_cell {
-                            0 => ProgramPatch {
-                                status: ProgramStatus::Normal,
-                                instruction_pointer: index + 1,
-                                jump_stack: Some(StackPatch::Pop),
-                                jump_table: Some((*start, index)),
-                            },
-                            _ => ProgramPatch {
-                                status: ProgramStatus::Normal,
-                                instruction_pointer: start + 1,
-                                jump_stack: None,
-                                jump_table: Some((*start, index)),
-                            },
-                        }
-                    }
-
-                    (command, ProgramStatus::Normal) => {
-                        vm.apply(command);
-                        ProgramPatch {
-                            status: ProgramStatus::Normal,
-                            instruction_pointer: index + 1,
-                            jump_stack: None,
-                            jump_table: None,
-                        }
-                    }
-
-                    (_, ProgramStatus::Seeking(goal)) => ProgramPatch {
-                        status: ProgramStatus::Seeking(goal),
-                        instruction_pointer: index + 1,
-                        jump_stack: None,
-                        jump_table: None,
-                    },
-                };
-
-                self.update(patch);
-                index = patch.instruction_pointer;
-            }
+        let Some(mut index) = self.instruction_pointer else {
+            return;
+        };
+        while index < self.instructions.len() {
+            let Some(plan) = self.plan(vm) else {
+                return;
+            };
+            self.apply(vm, plan);
+            index = self.instruction_pointer.unwrap();
         }
     }
 
-    fn update(&mut self, patch: ProgramPatch) -> &mut Self {
-        self.status = patch.status;
-        self.instruction_pointer = Some(patch.instruction_pointer);
-        match patch.jump_stack {
+    fn apply(&mut self, vm: &mut VM, plan: Plan) -> &mut Self {
+        if let Some(command) = plan.command {
+            vm.apply(command);
+        };
+        self.status = plan.status;
+        self.instruction_pointer = Some(plan.instruction_pointer);
+        match plan.jump_stack {
             None => {}
             Some(StackPatch::Pop) => {
                 self.jump_stack.pop();
@@ -264,7 +182,7 @@ impl Program {
                 self.jump_stack.push(index);
             }
         };
-        match patch.jump_table {
+        match plan.jump_table {
             None => {}
             Some((start, end)) => {
                 self.jump_table.insert(start, end);
