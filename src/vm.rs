@@ -118,4 +118,15 @@ mod tests {
         vm.left_shift();
         assert!(vm.data_pointer == 1);
     }
+
+    #[test]
+    fn test_output() {
+        let mut out = vec![];
+        let mut vm = VM::new(&mut out);
+        vm.cells[0] = 127;
+        vm.output();
+        vm.cells[0] = 255;
+        vm.output();
+        assert_eq!(vec![127, 255], out);
+    }
 }
