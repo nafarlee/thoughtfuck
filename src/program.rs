@@ -159,7 +159,7 @@ impl Program {
         }
     }
 
-    fn apply(&mut self, vm: &mut VM, plan: Plan) -> &mut Self {
+    fn apply(&mut self, vm: &mut VM, plan: Plan) {
         if let Some(command) = plan.command {
             vm.apply(command);
         };
@@ -180,6 +180,5 @@ impl Program {
                 self.jump_table.insert(start, end);
             }
         };
-        return self;
     }
 }
