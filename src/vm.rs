@@ -38,7 +38,6 @@ impl<'a> VM<'a> {
             },
             None => {}
         }
-        println!("");
     }
 
     pub fn increment(&mut self) {
