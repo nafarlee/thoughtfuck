@@ -23,8 +23,9 @@ pub fn test_output(input_filename: &str, expected_answer_filename: &str) {
     program.append(&commands);
 
     let mut stdout = FauxStdout::new();
+    let mut input = "".as_bytes();
     {
-        let mut vm = VM::new(&mut stdout);
+        let mut vm = VM::new(&mut input, &mut stdout);
         program.execute(&mut vm);
     }
     assert_eq!(stdout.buffer, read_file(expected_answer_filename));

@@ -14,7 +14,8 @@ use vm::VM;
 
 fn main() {
     let mut stdout = std::io::stdout();
-    let vm = VM::new(&mut stdout);
+    let mut stdin = std::io::stdin();
+    let vm = VM::new(&mut stdin, &mut stdout);
     let program = Program::new();
     match env::args().nth(1) {
         None => repl(vm, program),
