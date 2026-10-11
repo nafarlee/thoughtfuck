@@ -137,4 +137,15 @@ mod tests {
         vm.output();
         assert_eq!(vec![127, 255], out);
     }
+
+    #[test]
+    fn test_input() {
+        let mut out = vec![];
+        let mut input = "aA".as_bytes();
+        let mut vm = VM::new(&mut input, &mut out);
+        vm.input();
+        vm.right_shift();
+        vm.input();
+        assert_eq!(vec![97, 65], vm.cells[0..2]);
+    }
 }
