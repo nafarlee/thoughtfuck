@@ -49,6 +49,10 @@ impl Program {
         }
     }
 
+    pub fn stack_depth(&self) -> usize {
+        self.jump_stack.len()
+    }
+
     fn plan(&self, vm: &VM) -> Option<Plan> {
         let index = self.instruction_pointer?;
         match (self.instructions[index], self.status) {
