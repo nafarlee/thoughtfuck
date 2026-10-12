@@ -8,7 +8,7 @@ pub struct ImbalancedBrackets;
 
 impl Display for ImbalancedBrackets {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
-        write!(f, "Program ended with imbalanced brackets")
+        write!(f, "{}", self)
     }
 }
 
