@@ -13,3 +13,14 @@ impl Display for ImbalancedBrackets {
 }
 
 impl Error for ImbalancedBrackets {}
+
+#[derive(Clone, Debug)]
+pub struct TapeBoundsOverflow;
+
+impl Display for TapeBoundsOverflow {
+    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
+        write!(f, "{}", self)
+    }
+}
+
+impl Error for TapeBoundsOverflow {}
