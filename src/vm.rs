@@ -80,7 +80,7 @@ impl<'a> VM<'a> {
             }
             Command::RightShift => self.right_shift(),
             Command::LeftShift => self.left_shift(),
-            _ => Ok(()),
+            Command::JumpForward | Command::JumpBackward => Ok(()),
         }
     }
 }
