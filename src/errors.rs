@@ -24,3 +24,14 @@ impl Display for TapeBoundsOverflow {
 }
 
 impl Error for TapeBoundsOverflow {}
+
+#[derive(Clone, Debug)]
+pub struct TapeBoundsUnderflow;
+
+impl Display for TapeBoundsUnderflow {
+    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
+        write!(f, "{}", self)
+    }
+}
+
+impl Error for TapeBoundsUnderflow {}
