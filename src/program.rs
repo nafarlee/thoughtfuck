@@ -75,7 +75,7 @@ impl Program {
         match (self.instructions[index], self.status) {
             (Command::JumpForward, ProgramStatus::Seeking(_)) => Ok(Effect::SeekPastLeftBracket),
             (Command::JumpBackward, ProgramStatus::Seeking(goal)) => {
-                if goal + 1 == self.jump_stack.len() {
+                if goal + 1 == self.stack_depth() {
                     Ok(Effect::FindRightBracket)
                 } else {
                     Ok(Effect::SeekPastRightBracket)
@@ -115,7 +115,7 @@ impl Program {
         };
         match effect {
             Effect::StartSeeking => {
-                self.status = ProgramStatus::Seeking(self.jump_stack.len());
+                self.status = ProgramStatus::Seeking(self.stack_depth());
                 self.jump_stack.push(index);
                 self.instruction_pointer = Some(index + 1);
             }
