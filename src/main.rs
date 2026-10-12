@@ -8,6 +8,7 @@ use std::fs::File;
 use std::io::{Read, Write};
 use std::path::Path;
 
+use errors::ImbalancedBrackets;
 use parse::parse;
 use program::Program;
 use program::ProgramStatus;
@@ -19,28 +20,32 @@ fn main() -> Result<(), Box<dyn Error>> {
     let vm = VM::new(&mut stdin, &mut stdout);
     let program = Program::new();
     match env::args().nth(1) {
-        None => Ok(repl(vm, program)),
+        None => repl(vm, program),
         Some(arg) => interpreter(arg, vm, program),
     }
 }
 
-fn repl(mut vm: VM, mut program: Program) -> () {
+fn repl(mut vm: VM, mut program: Program) -> Result<(), Box<dyn Error>> {
     loop {
         if let ProgramStatus::Normal = program.status {
             print!("tf> ");
         } else {
             print!("... ");
         }
-        std::io::stdout().flush().unwrap();
+        std::io::stdout().flush()?;
 
         let mut line = String::new();
-        let commands = match std::io::stdin().read_line(&mut line) {
-            Ok(0) => break,
-            Ok(_) => parse(&line),
-            Err(error) => panic!("{}", error),
-        };
-        program.append(&commands);
+        let read_count = std::io::stdin().read_line(&mut line)?;
+        if 0 == read_count {
+            break;
+        }
+
+        program.append(&parse(&line));
         program.execute(&mut vm);
+    }
+    match program.stack_depth() {
+        0 => Ok(()),
+        _ => Err(ImbalancedBrackets.into()),
     }
 }
 
