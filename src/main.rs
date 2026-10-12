@@ -30,9 +30,10 @@ fn repl(mut vm: VM, mut program: Program) -> Result<(), Box<dyn Error>> {
         std::io::stdout().flush()?;
 
         let mut line = String::new();
-        let read_count = std::io::stdin().read_line(&mut line)?;
-        if 0 == read_count {
-            break;
+        match std::io::stdin().read_line(&mut line) {
+            Err(e) => return Err(e.into()),
+            Ok(0) => break,
+            Ok(_) => {},
         }
 
         program.append(&parse(&line));
