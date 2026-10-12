@@ -8,7 +8,7 @@ pub struct ImbalancedBrackets;
 
 impl Display for ImbalancedBrackets {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
-        write!(f, "{}", self)
+        fmt::Debug::fmt(self, f)
     }
 }
 
@@ -19,7 +19,7 @@ pub struct TapeBoundsOverflow;
 
 impl Display for TapeBoundsOverflow {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
-        write!(f, "{}", self)
+        fmt::Debug::fmt(self, f)
     }
 }
 
@@ -30,7 +30,7 @@ pub struct TapeBoundsUnderflow;
 
 impl Display for TapeBoundsUnderflow {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
-        write!(f, "{}", self)
+        fmt::Debug::fmt(self, f)
     }
 }
 
