@@ -1,6 +1,9 @@
-use crate::command::Command;
-use crate::vm::VM;
 use std::collections::HashMap;
+use std::error::Error;
+
+use crate::command::Command;
+use crate::errors::ImbalancedBrackets;
+use crate::vm::VM;
 
 pub struct Program {
     instructions: Vec<Command>,
@@ -51,6 +54,18 @@ impl Program {
 
     pub fn stack_depth(&self) -> usize {
         self.jump_stack.len()
+    }
+
+    pub fn assert_brackets_match(&self) -> Result<(), Box<dyn Error>> {
+        let count: i64 = self.instructions.iter().fold(0, |acc, i| match i {
+            Command::JumpForward => acc + 1,
+            Command::JumpBackward => acc - 1,
+            _ => acc,
+        });
+        match count {
+            0 => Ok(()),
+            _ => Err(ImbalancedBrackets.into()),
+        }
     }
 
     fn plan(&self, vm: &VM) -> Option<Plan> {
