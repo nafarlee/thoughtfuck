@@ -1,9 +1,8 @@
 use crate::command::Command;
 
 pub fn parse(s: &str) -> Vec<Command> {
-    let mut vec = Vec::new();
-    for c in s.chars() {
-        let command = match c {
+    s.chars()
+        .filter_map(|c| match c {
             '.' => Some(Command::Output),
             ',' => Some(Command::Input),
             '<' => Some(Command::LeftShift),
@@ -13,13 +12,8 @@ pub fn parse(s: &str) -> Vec<Command> {
             '[' => Some(Command::JumpForward),
             ']' => Some(Command::JumpBackward),
             _ => None,
-        };
-        match command {
-            Some(com) => vec.push(com),
-            None => {}
-        }
-    }
-    vec
+        })
+        .collect()
 }
 
 #[cfg(test)]
