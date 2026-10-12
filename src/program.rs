@@ -34,20 +34,6 @@ enum Effect {
     NoOp,
 }
 
-enum StackPatch {
-    Pop,
-    Push(usize),
-}
-
-#[derive(Clone, Copy, Debug, PartialEq)]
-struct Plan {
-    pub instruction_pointer: usize,
-    pub jump_stack: Option<StackPatch>,
-    pub jump_table: Option<(usize, usize)>,
-    pub status: ProgramStatus,
-    pub command: Option<Command>,
-}
-
 impl Program {
     pub fn new() -> Program {
         Program {
