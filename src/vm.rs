@@ -1,10 +1,11 @@
 use crate::command::Command;
 use std::io::{Read, Write};
 
+const TAPE_SIZE: usize = 30_000;
 pub type Cell = u8;
 
 pub struct VM<'a> {
-    cells: [Cell; 30_000],
+    cells: [Cell; TAPE_SIZE],
     data_pointer: usize,
     out: &'a mut dyn Write,
     input: &'a mut dyn Read,
@@ -13,7 +14,7 @@ pub struct VM<'a> {
 impl<'a> VM<'a> {
     pub fn new(input: &'a mut dyn Read, out: &'a mut dyn Write) -> VM<'a> {
         VM {
-            cells: [0; 30_000],
+            cells: [0; TAPE_SIZE],
             data_pointer: 0,
             out,
             input,
@@ -79,7 +80,7 @@ mod tests {
         let mut input = "".as_bytes();
         let vm = VM::new(&mut input, &mut stdout);
         assert!(vm.cells[0] == 0);
-        assert!(vm.cells[30_000 - 1] == 0);
+        assert!(vm.cells[TAPE_SIZE - 1] == 0);
         assert!(vm.cells[0] == 0);
     }
 
