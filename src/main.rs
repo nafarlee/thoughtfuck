@@ -4,9 +4,8 @@ use thoughtfuck::*;
 
 use std::env;
 use std::error::Error;
-use std::fs::File;
-use std::io::{Read, Write};
-use std::path::Path;
+use std::fs::read_to_string;
+use std::io::Write;
 
 use errors::ImbalancedBrackets;
 use parse::parse;
@@ -48,13 +47,7 @@ fn repl(mut vm: VM, mut program: Program) -> Result<(), Box<dyn Error>> {
 }
 
 fn interpreter(arg: String, mut vm: VM, mut program: Program) -> Result<(), Box<dyn Error>> {
-    let path = Path::new(&arg);
-    let mut contents = String::new();
-    File::open(&path)
-        .unwrap()
-        .read_to_string(&mut contents)
-        .unwrap();
-
+    let contents = read_to_string(&arg)?;
     program.append(&parse(&contents));
     program.assert_brackets_match()?;
     program.execute(&mut vm);
