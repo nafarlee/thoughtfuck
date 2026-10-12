@@ -82,100 +82,32 @@ impl Program {
         }
     }
 
-    fn plan(&self, vm: &VM) -> Option<Plan> {
-        let index = self.instruction_pointer?;
+    fn plan(&self, vm: &VM) -> Result<Effect, Box<dyn Error>> {
+        let Some(index) = self.instruction_pointer else {
+            return Ok(Effect::NoOp);
+        };
         match (self.instructions[index], self.status) {
-            (Command::JumpForward, ProgramStatus::Seeking(goal)) => Some(Plan {
-                status: ProgramStatus::Seeking(goal),
-                instruction_pointer: index + 1,
-                jump_stack: Some(StackPatch::Push(index)),
-                jump_table: None,
-                command: None,
-            }),
-
+            (Command::JumpForward, ProgramStatus::Seeking(_)) => Ok(Effect::SeekPastLeftBracket),
             (Command::JumpBackward, ProgramStatus::Seeking(goal)) => {
-                let start = self
-                    .jump_stack
-                    .last()
-                    .expect("Found ']' without a matching '['");
-                let status = if goal + 1 == self.jump_stack.len() {
-                    ProgramStatus::Normal
+                if goal + 1 == self.jump_stack.len() {
+                    Ok(Effect::FindRightBracket)
                 } else {
-                    ProgramStatus::Seeking(goal)
-                };
-                Some(Plan {
-                    status: status,
-                    instruction_pointer: index + 1,
-                    jump_stack: Some(StackPatch::Pop),
-                    jump_table: Some((*start, index)),
-                    command: None,
-                })
+                    Ok(Effect::SeekPastRightBracket)
+                }
             }
-
             (Command::JumpForward, ProgramStatus::Normal) => {
                 match (vm.get(), self.jump_table.get(&index)) {
-                    (0, Some(end)) => Some(Plan {
-                        status: ProgramStatus::Normal,
-                        instruction_pointer: end + 1,
-                        jump_stack: None,
-                        jump_table: None,
-                        command: None,
-                    }),
-                    (0, None) => Some(Plan {
-                        status: ProgramStatus::Seeking(self.jump_stack.len()),
-                        instruction_pointer: index + 1,
-                        jump_stack: Some(StackPatch::Push(index)),
-                        jump_table: None,
-                        command: None,
-                    }),
-                    (_, _) => Some(Plan {
-                        status: ProgramStatus::Normal,
-                        instruction_pointer: index + 1,
-                        jump_stack: Some(StackPatch::Push(index)),
-                        jump_table: None,
-                        command: None,
-                    }),
+                    (0, Some(_)) => Ok(Effect::JumpToRightBracket),
+                    (0, None) => Ok(Effect::StartSeeking),
+                    (_, _) => Ok(Effect::EnterLeftBracket),
                 }
             }
-
-            (Command::JumpBackward, ProgramStatus::Normal) => {
-                let start = self
-                    .jump_stack
-                    .last()
-                    .expect("Found ']' without a matching '['");
-                match vm.get() {
-                    0 => Some(Plan {
-                        status: ProgramStatus::Normal,
-                        instruction_pointer: index + 1,
-                        jump_stack: Some(StackPatch::Pop),
-                        jump_table: Some((*start, index)),
-                        command: None,
-                    }),
-                    _ => Some(Plan {
-                        status: ProgramStatus::Normal,
-                        instruction_pointer: start + 1,
-                        jump_stack: None,
-                        jump_table: Some((*start, index)),
-                        command: None,
-                    }),
-                }
-            }
-
-            (command, ProgramStatus::Normal) => Some(Plan {
-                status: ProgramStatus::Normal,
-                instruction_pointer: index + 1,
-                jump_stack: None,
-                jump_table: None,
-                command: Some(command),
-            }),
-
-            (_, ProgramStatus::Seeking(goal)) => Some(Plan {
-                status: ProgramStatus::Seeking(goal),
-                instruction_pointer: index + 1,
-                jump_stack: None,
-                jump_table: None,
-                command: None,
-            }),
+            (Command::JumpBackward, ProgramStatus::Normal) => match vm.get() {
+                0 => Ok(Effect::ExitRightBracket),
+                _ => Ok(Effect::JumpToLeftBracket),
+            },
+            (command, ProgramStatus::Normal) => Ok(Effect::Apply(command)),
+            (_, ProgramStatus::Seeking(_)) => Ok(Effect::Seek),
         }
     }
 
@@ -184,36 +116,74 @@ impl Program {
             return Ok(());
         };
         while index < self.instructions.len() {
-            let Some(plan) = self.plan(vm) else {
-                return Ok(());
-            };
+            let plan = self.plan(vm)?;
             self.apply(vm, plan)?;
             index = self.instruction_pointer.unwrap();
         }
         Ok(())
     }
 
-    fn apply(&mut self, vm: &mut VM, plan: Plan) -> Result<(), Box<dyn Error>> {
-        if let Some(command) = plan.command {
-            vm.apply(command)?;
+    fn apply(&mut self, vm: &mut VM, effect: Effect) -> Result<(), Box<dyn Error>> {
+        let Some(index) = self.instruction_pointer else {
+            return Ok(());
         };
-        self.status = plan.status;
-        self.instruction_pointer = Some(plan.instruction_pointer);
-        match plan.jump_stack {
-            None => {}
-            Some(StackPatch::Pop) => {
-                self.jump_stack.pop();
-            }
-            Some(StackPatch::Push(index)) => {
+        match effect {
+            Effect::StartSeeking => {
+                self.status = ProgramStatus::Seeking(self.jump_stack.len());
                 self.jump_stack.push(index);
+                self.instruction_pointer = Some(index + 1);
             }
-        };
-        match plan.jump_table {
-            None => {}
-            Some((start, end)) => {
-                self.jump_table.insert(start, end);
+            Effect::SeekPastLeftBracket => {
+                self.jump_stack.push(index);
+                self.instruction_pointer = Some(index + 1);
             }
-        };
+            Effect::SeekPastRightBracket => {
+                let Some(start) = self.jump_stack.pop() else {
+                    return Err(ImbalancedBrackets.into());
+                };
+                self.jump_table.insert(start, index);
+                self.instruction_pointer = Some(index + 1);
+            }
+            Effect::FindRightBracket => {
+                let Some(start) = self.jump_stack.pop() else {
+                    return Err(ImbalancedBrackets.into());
+                };
+                self.status = ProgramStatus::Normal;
+                self.jump_table.insert(start, index);
+                self.instruction_pointer = Some(index + 1);
+            }
+            Effect::JumpToRightBracket => {
+                let Some(end) = self.jump_table.get(&index) else {
+                    return Err(ImbalancedBrackets.into());
+                };
+                self.instruction_pointer = Some(end + 1);
+            }
+            Effect::JumpToLeftBracket => {
+                let Some(start) = self.jump_stack.last() else {
+                    return Err(ImbalancedBrackets.into());
+                };
+                self.instruction_pointer = Some(start + 1)
+            }
+            Effect::EnterLeftBracket => {
+                self.jump_stack.push(index);
+                self.instruction_pointer = Some(index + 1);
+            }
+            Effect::ExitRightBracket => {
+                let Some(start) = self.jump_stack.pop() else {
+                    return Err(ImbalancedBrackets.into());
+                };
+                self.jump_table.insert(start, index);
+                self.instruction_pointer = Some(index + 1);
+            }
+            Effect::Seek => {
+                self.instruction_pointer = Some(index + 1);
+            }
+            Effect::Apply(c) => {
+                vm.apply(c)?;
+                self.instruction_pointer = Some(index + 1);
+            }
+            Effect::NoOp => {}
+        }
         Ok(())
     }
 }
