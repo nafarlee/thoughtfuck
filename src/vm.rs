@@ -22,7 +22,7 @@ impl<'a> VM<'a> {
     }
 
     pub fn get(&self) -> Cell {
-        return self.cells[self.data_pointer];
+        self.cells[self.data_pointer]
     }
 
     pub fn output(&mut self) {
