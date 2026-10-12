@@ -1,5 +1,3 @@
-extern crate thoughtfuck;
-
 use thoughtfuck::*;
 
 use std::env;

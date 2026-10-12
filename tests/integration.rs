@@ -1,5 +1,3 @@
-extern crate thoughtfuck;
-
 mod common;
 
 #[test]
