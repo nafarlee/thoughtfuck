@@ -20,6 +20,20 @@ pub enum ProgramStatus {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
+enum Effect {
+    StartSeeking,
+    SeekPastLeftBracket,
+    SeekPastRightBracket,
+    FindRightBracket,
+    JumpToRightBracket,
+    JumpToLeftBracket,
+    EnterLeftBracket,
+    ExitRightBracket,
+    Apply(Command),
+    Seek,
+    NoOp,
+}
+
 enum StackPatch {
     Pop,
     Push(usize),
