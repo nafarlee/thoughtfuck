@@ -3,6 +3,7 @@ extern crate thoughtfuck;
 use thoughtfuck::*;
 
 use std::env;
+use std::error::Error;
 use std::fs::File;
 use std::io::{Read, Write};
 use std::path::Path;
@@ -12,13 +13,13 @@ use program::Program;
 use program::ProgramStatus;
 use vm::VM;
 
-fn main() {
+fn main() -> Result<(), Box<dyn Error>> {
     let mut stdout = std::io::stdout();
     let mut stdin = std::io::stdin();
     let vm = VM::new(&mut stdin, &mut stdout);
     let program = Program::new();
     match env::args().nth(1) {
-        None => repl(vm, program),
+        None => Ok(repl(vm, program)),
         Some(arg) => interpreter(arg, vm, program),
     }
 }
@@ -43,7 +44,7 @@ fn repl(mut vm: VM, mut program: Program) -> () {
     }
 }
 
-fn interpreter(arg: String, mut vm: VM, mut program: Program) -> () {
+fn interpreter(arg: String, mut vm: VM, mut program: Program) -> Result<(), Box<dyn Error>> {
     let path = Path::new(&arg);
     let mut contents = String::new();
     File::open(&path)
@@ -52,5 +53,7 @@ fn interpreter(arg: String, mut vm: VM, mut program: Program) -> () {
         .unwrap();
 
     program.append(&parse(&contents));
+    program.assert_brackets_match()?;
     program.execute(&mut vm);
+    Ok(())
 }
