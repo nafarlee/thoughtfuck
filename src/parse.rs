@@ -27,8 +27,8 @@ mod tests {
     use super::*;
     #[test]
     fn test_parse() {
-        const COMMAND_TOUR: &'static str = ".,><+-[]9";
-        let actual = parse(&COMMAND_TOUR);
+        let command_tour = ".,><+-[]9";
+        let actual = parse(command_tour);
         let expected = [
             Command::Output,
             Command::Input,
