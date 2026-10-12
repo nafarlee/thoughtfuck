@@ -11,7 +11,6 @@ use std::path::Path;
 use errors::ImbalancedBrackets;
 use parse::parse;
 use program::Program;
-use program::ProgramStatus;
 use vm::VM;
 
 fn main() -> Result<(), Box<dyn Error>> {
@@ -27,10 +26,9 @@ fn main() -> Result<(), Box<dyn Error>> {
 
 fn repl(mut vm: VM, mut program: Program) -> Result<(), Box<dyn Error>> {
     loop {
-        if let ProgramStatus::Normal = program.status {
-            print!("tf> ");
-        } else {
-            print!("... ");
+        match program.stack_depth() {
+            0 => print!("tf> "),
+            x => print!("tf+{}> ", x),
         }
         std::io::stdout().flush()?;
 

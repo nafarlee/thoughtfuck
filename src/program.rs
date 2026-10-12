@@ -10,7 +10,7 @@ pub struct Program {
     instruction_pointer: Option<usize>,
     jump_stack: Vec<usize>,
     jump_table: HashMap<usize, usize>,
-    pub status: ProgramStatus,
+    status: ProgramStatus,
 }
 
 #[derive(Clone, Copy, PartialEq, Debug)]
