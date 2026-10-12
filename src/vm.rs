@@ -1,4 +1,6 @@
 use crate::command::Command;
+use crate::errors;
+use std::error::Error;
 use std::io::{Read, Write};
 
 const TAPE_SIZE: usize = 30_000;
@@ -25,20 +27,18 @@ impl<'a> VM<'a> {
         self.cells[self.data_pointer]
     }
 
-    pub fn output(&mut self) {
-        self.out
-            .write_all(&[self.get()])
-            .expect("Could not output current byte");
+    pub fn output(&mut self) -> Result<(), Box<dyn Error>> {
+        self.out.write_all(&[self.get()])?;
+        Ok(())
     }
 
-    pub fn input(&mut self) {
+    pub fn input(&mut self) -> Result<(), Box<dyn Error>> {
         match self.input.bytes().next() {
-            Some(res) => match res {
-                Ok(value) => self.cells[self.data_pointer] = value,
-                Err(error) => panic!("{}", error),
-            },
+            Some(Ok(value)) => self.cells[self.data_pointer] = value,
+            Some(Err(e)) => return Err(e.into()),
             None => {}
         }
+        Ok(())
     }
 
     pub fn increment(&mut self) {
@@ -49,30 +49,38 @@ impl<'a> VM<'a> {
         self.cells[self.data_pointer] = self.get().wrapping_sub(1);
     }
 
-    pub fn right_shift(&mut self) {
+    pub fn right_shift(&mut self) -> Result<(), Box<dyn Error>> {
         if self.data_pointer < TAPE_SIZE - 1 {
             self.data_pointer += 1;
+            Ok(())
         } else {
-            panic!("TapeBoundsOverflow");
+            Err(errors::TapeBoundsOverflow.into())
         }
     }
 
-    pub fn left_shift(&mut self) {
-        self.data_pointer = self
-            .data_pointer
-            .checked_sub(1)
-            .expect("TapeBoundsUnderflow");
+    pub fn left_shift(&mut self) -> Result<(), Box<dyn Error>> {
+        let Some(x) = self.data_pointer.checked_sub(1) else {
+            return Err(errors::TapeBoundsUnderflow.into());
+        };
+        self.data_pointer = x;
+        Ok(())
     }
 
-    pub fn apply(&mut self, command: Command) {
+    pub fn apply(&mut self, command: Command) -> Result<(), Box<dyn Error>> {
         match command {
             Command::Output => self.output(),
             Command::Input => self.input(),
-            Command::Increment => self.increment(),
-            Command::Decrement => self.decrement(),
+            Command::Increment => {
+                self.increment();
+                Ok(())
+            }
+            Command::Decrement => {
+                self.decrement();
+                Ok(())
+            }
             Command::RightShift => self.right_shift(),
             Command::LeftShift => self.left_shift(),
-            _ => {}
+            _ => Ok(()),
         }
     }
 }
@@ -117,7 +125,7 @@ mod tests {
         let mut stdout = io::stdout();
         let mut input = "".as_bytes();
         let mut vm = VM::new(&mut input, &mut stdout);
-        vm.right_shift();
+        vm.right_shift().unwrap();
         assert!(vm.data_pointer == 1);
     }
 
@@ -129,7 +137,7 @@ mod tests {
         let mut input = "".as_bytes();
         let mut vm = VM::new(&mut input, &mut stdout);
         vm.data_pointer = STARTING_POSITION;
-        vm.left_shift();
+        vm.left_shift().unwrap();
         assert!(vm.data_pointer == 1);
     }
 
@@ -139,9 +147,9 @@ mod tests {
         let mut input = "".as_bytes();
         let mut vm = VM::new(&mut input, &mut out);
         vm.cells[0] = 127;
-        vm.output();
+        vm.output().unwrap();
         vm.cells[0] = 255;
-        vm.output();
+        vm.output().unwrap();
         assert_eq!(vec![127, 255], out);
     }
 
@@ -150,9 +158,9 @@ mod tests {
         let mut out = vec![];
         let mut input = "aA".as_bytes();
         let mut vm = VM::new(&mut input, &mut out);
-        vm.input();
-        vm.right_shift();
-        vm.input();
+        vm.input().unwrap();
+        vm.right_shift().unwrap();
+        vm.input().unwrap();
         assert_eq!(vec![97, 65], vm.cells[0..2]);
     }
 }

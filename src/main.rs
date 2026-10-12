@@ -33,11 +33,11 @@ fn repl(mut vm: VM, mut program: Program) -> Result<(), Box<dyn Error>> {
         match std::io::stdin().read_line(&mut line) {
             Err(e) => return Err(e.into()),
             Ok(0) => break,
-            Ok(_) => {},
+            Ok(_) => {}
         }
 
         program.append(&parse(&line));
-        program.execute(&mut vm);
+        program.execute(&mut vm)?;
     }
     match program.stack_depth() {
         0 => Ok(()),
@@ -49,6 +49,6 @@ fn interpreter(arg: String, mut vm: VM, mut program: Program) -> Result<(), Box<
     let contents = read_to_string(&arg)?;
     program.append(&parse(&contents));
     program.assert_brackets_match()?;
-    program.execute(&mut vm);
+    program.execute(&mut vm)?;
     Ok(())
 }

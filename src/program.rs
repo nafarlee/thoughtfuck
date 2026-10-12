@@ -165,22 +165,23 @@ impl Program {
         }
     }
 
-    pub fn execute(&mut self, vm: &mut VM) {
+    pub fn execute(&mut self, vm: &mut VM) -> Result<(), Box<dyn Error>> {
         let Some(mut index) = self.instruction_pointer else {
-            return;
+            return Ok(());
         };
         while index < self.instructions.len() {
             let Some(plan) = self.plan(vm) else {
-                return;
+                return Ok(());
             };
-            self.apply(vm, plan);
+            self.apply(vm, plan)?;
             index = self.instruction_pointer.unwrap();
         }
+        Ok(())
     }
 
-    fn apply(&mut self, vm: &mut VM, plan: Plan) {
+    fn apply(&mut self, vm: &mut VM, plan: Plan) -> Result<(), Box<dyn Error>> {
         if let Some(command) = plan.command {
-            vm.apply(command);
+            vm.apply(command)?;
         };
         self.status = plan.status;
         self.instruction_pointer = Some(plan.instruction_pointer);
@@ -199,5 +200,6 @@ impl Program {
                 self.jump_table.insert(start, end);
             }
         };
+        Ok(())
     }
 }
