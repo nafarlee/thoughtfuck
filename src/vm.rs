@@ -42,11 +42,11 @@ impl<'a> VM<'a> {
     }
 
     pub fn increment(&mut self) {
-        self.cells[self.data_pointer] = self.get().checked_add(1).unwrap_or(0);
+        self.cells[self.data_pointer] = self.get().wrapping_add(1);
     }
 
     pub fn decrement(&mut self) {
-        self.cells[self.data_pointer] = self.get().checked_sub(1).unwrap_or(Cell::MAX);
+        self.cells[self.data_pointer] = self.get().wrapping_sub(1);
     }
 
     pub fn right_shift(&mut self) {
