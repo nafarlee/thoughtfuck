@@ -50,11 +50,18 @@ impl<'a> VM<'a> {
     }
 
     pub fn right_shift(&mut self) {
-        self.data_pointer += 1;
+        if self.data_pointer < TAPE_SIZE - 1 {
+            self.data_pointer += 1;
+        } else {
+            panic!("TapeBoundsOverflow");
+        }
     }
 
     pub fn left_shift(&mut self) {
-        self.data_pointer -= 1;
+        self.data_pointer = self
+            .data_pointer
+            .checked_sub(1)
+            .expect("TapeBoundsUnderflow");
     }
 
     pub fn apply(&mut self, command: Command) {
