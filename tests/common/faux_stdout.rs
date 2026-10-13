@@ -19,7 +19,7 @@ impl Write for FauxStdout {
             Err(e) => panic!("{}", e),
             Ok(s) => {
                 self.buffer += s;
-                return Ok(s.len());
+                Ok(s.len())
             }
         }
     }
