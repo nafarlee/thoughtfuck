@@ -1,5 +1,7 @@
-use std::io::{Result, Write};
-use std::str;
+use std::{
+    io::{self, Write},
+    str,
+};
 
 pub struct FauxStdout {
     pub buffer: String,
@@ -14,7 +16,7 @@ impl FauxStdout {
 }
 
 impl Write for FauxStdout {
-    fn write(&mut self, buf: &[u8]) -> Result<usize> {
+    fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
         match str::from_utf8(buf) {
             Err(e) => panic!("{}", e),
             Ok(s) => {
@@ -24,7 +26,7 @@ impl Write for FauxStdout {
         }
     }
 
-    fn flush(&mut self) -> Result<()> {
+    fn flush(&mut self) -> io::Result<()> {
         Ok(())
     }
 }

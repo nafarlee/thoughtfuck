@@ -1,9 +1,6 @@
-use std::collections::HashMap;
-use std::error::Error;
+use std::{collections::HashMap, error::Error};
 
-use crate::command::Command;
-use crate::errors::ImbalancedBrackets;
-use crate::vm::VM;
+use crate::{command::Command, errors::ImbalancedBrackets, vm::VM};
 
 #[derive(Default)]
 pub struct Program {

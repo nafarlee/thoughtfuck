@@ -1,7 +1,9 @@
-use crate::command::Command;
-use crate::errors;
-use std::error::Error;
-use std::io::{Read, Write};
+use std::{
+    error::Error,
+    io::{Read, Write},
+};
+
+use crate::{command::Command, errors};
 
 const TAPE_SIZE: usize = 30_000;
 pub type Cell = u8;

@@ -1,7 +1,4 @@
-use std::env;
-use std::error::Error;
-use std::fs::read_to_string;
-use std::io::Write;
+use std::{env, error::Error, fs::read_to_string, io::Write};
 
 use thoughtfuck::{errors::ImbalancedBrackets, parse::parse, program::Program, vm::VM};
 

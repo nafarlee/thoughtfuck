@@ -1,11 +1,8 @@
 mod faux_stdout;
 
 use self::faux_stdout::FauxStdout;
-use std::fs::File;
-use std::io::Read;
-use thoughtfuck::parse::parse;
-use thoughtfuck::program::Program;
-use thoughtfuck::vm::VM;
+use std::{fs::File, io::Read};
+use thoughtfuck::{parse::parse, program::Program, vm::VM};
 
 fn read_file(filename: &str) -> String {
     let mut file = File::open(filename).unwrap();

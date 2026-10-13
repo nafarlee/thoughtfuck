@@ -1,7 +1,7 @@
-use std::error::Error;
-use std::fmt;
-use std::fmt::Display;
-use std::fmt::Formatter;
+use std::{
+    error::Error,
+    fmt::{self, Display, Formatter},
+};
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct ImbalancedBrackets;
