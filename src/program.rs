@@ -69,32 +69,32 @@ impl Program {
         }
     }
 
-    fn plan(&self, vm: &VM) -> Result<Effect, Box<dyn Error>> {
+    fn plan(&self, vm: &VM) -> Effect {
         let Some(index) = self.instruction_pointer else {
-            return Ok(Effect::NoOp);
+            return Effect::NoOp;
         };
         match (self.instructions[index], self.status) {
-            (Command::JumpForward, ProgramStatus::Seeking(_)) => Ok(Effect::Push),
+            (Command::JumpForward, ProgramStatus::Seeking(_)) => Effect::Push,
             (Command::JumpBackward, ProgramStatus::Seeking(goal)) => {
                 if goal + 1 == self.stack_depth() {
-                    Ok(Effect::FindRightBracket)
+                    Effect::FindRightBracket
                 } else {
-                    Ok(Effect::Pop)
+                    Effect::Pop
                 }
             }
             (Command::JumpForward, ProgramStatus::Normal) => {
                 match (vm.get(), self.jump_table.get(&index)) {
-                    (0, Some(_)) => Ok(Effect::JumpToRightBracket),
-                    (0, None) => Ok(Effect::StartSeeking),
-                    (_, _) => Ok(Effect::Push),
+                    (0, Some(_)) => Effect::JumpToRightBracket,
+                    (0, None) => Effect::StartSeeking,
+                    (_, _) => Effect::Push,
                 }
             }
             (Command::JumpBackward, ProgramStatus::Normal) => match vm.get() {
-                0 => Ok(Effect::Pop),
-                _ => Ok(Effect::JumpToLeftBracket),
+                0 => Effect::Pop,
+                _ => Effect::JumpToLeftBracket,
             },
-            (command, ProgramStatus::Normal) => Ok(Effect::Apply(command)),
-            (_, ProgramStatus::Seeking(_)) => Ok(Effect::Seek),
+            (command, ProgramStatus::Normal) => Effect::Apply(command),
+            (_, ProgramStatus::Seeking(_)) => Effect::Seek,
         }
     }
 
@@ -103,7 +103,7 @@ impl Program {
             return Ok(());
         };
         while index < self.instructions.len() {
-            let plan = self.plan(vm)?;
+            let plan = self.plan(vm);
             self.apply(vm, plan)?;
             index = self.instruction_pointer.unwrap();
         }
