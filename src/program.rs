@@ -24,13 +24,11 @@ pub enum ProgramStatus {
 #[derive(Clone, Copy, Debug, PartialEq)]
 enum Effect {
     StartSeeking,
-    SeekPastLeftBracket,
-    SeekPastRightBracket,
+    Push,
+    Pop,
     FindRightBracket,
     JumpToRightBracket,
     JumpToLeftBracket,
-    EnterLeftBracket,
-    ExitRightBracket,
     Apply(Command),
     Seek,
     NoOp,
@@ -76,23 +74,23 @@ impl Program {
             return Ok(Effect::NoOp);
         };
         match (self.instructions[index], self.status) {
-            (Command::JumpForward, ProgramStatus::Seeking(_)) => Ok(Effect::SeekPastLeftBracket),
+            (Command::JumpForward, ProgramStatus::Seeking(_)) => Ok(Effect::Push),
             (Command::JumpBackward, ProgramStatus::Seeking(goal)) => {
                 if goal + 1 == self.stack_depth() {
                     Ok(Effect::FindRightBracket)
                 } else {
-                    Ok(Effect::SeekPastRightBracket)
+                    Ok(Effect::Pop)
                 }
             }
             (Command::JumpForward, ProgramStatus::Normal) => {
                 match (vm.get(), self.jump_table.get(&index)) {
                     (0, Some(_)) => Ok(Effect::JumpToRightBracket),
                     (0, None) => Ok(Effect::StartSeeking),
-                    (_, _) => Ok(Effect::EnterLeftBracket),
+                    (_, _) => Ok(Effect::Push),
                 }
             }
             (Command::JumpBackward, ProgramStatus::Normal) => match vm.get() {
-                0 => Ok(Effect::ExitRightBracket),
+                0 => Ok(Effect::Pop),
                 _ => Ok(Effect::JumpToLeftBracket),
             },
             (command, ProgramStatus::Normal) => Ok(Effect::Apply(command)),
@@ -122,11 +120,11 @@ impl Program {
                 self.jump_stack.push(index);
                 self.instruction_pointer = Some(index + 1);
             }
-            Effect::SeekPastLeftBracket => {
+            Effect::Push => {
                 self.jump_stack.push(index);
                 self.instruction_pointer = Some(index + 1);
             }
-            Effect::SeekPastRightBracket => {
+            Effect::Pop => {
                 let Some(start) = self.jump_stack.pop() else {
                     return Err(ImbalancedBrackets.into());
                 };
@@ -152,17 +150,6 @@ impl Program {
                     return Err(ImbalancedBrackets.into());
                 };
                 self.instruction_pointer = Some(start + 1)
-            }
-            Effect::EnterLeftBracket => {
-                self.jump_stack.push(index);
-                self.instruction_pointer = Some(index + 1);
-            }
-            Effect::ExitRightBracket => {
-                let Some(start) = self.jump_stack.pop() else {
-                    return Err(ImbalancedBrackets.into());
-                };
-                self.jump_table.insert(start, index);
-                self.instruction_pointer = Some(index + 1);
             }
             Effect::Seek => {
                 self.instruction_pointer = Some(index + 1);
