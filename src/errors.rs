@@ -3,7 +3,7 @@ use std::fmt;
 use std::fmt::Display;
 use std::fmt::Formatter;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct ImbalancedBrackets;
 
 impl Display for ImbalancedBrackets {

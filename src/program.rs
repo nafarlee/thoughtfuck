@@ -175,3 +175,21 @@ impl Program {
         Ok(())
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_imbalanced_bracket() {
+        let mut program = Program::new();
+        program.append(&vec![Command::JumpForward]);
+        let Err(err) = program.assert_brackets_match() else {
+            panic!();
+        };
+        assert_eq!(
+            Some(&ImbalancedBrackets),
+            err.downcast_ref::<ImbalancedBrackets>()
+        );
+    }
+}
