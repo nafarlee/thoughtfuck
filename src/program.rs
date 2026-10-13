@@ -35,13 +35,7 @@ enum Effect {
 
 impl Program {
     pub fn new() -> Program {
-        Program {
-            instructions: Vec::new(),
-            instruction_pointer: 0,
-            jump_stack: Vec::new(),
-            jump_table: HashMap::new(),
-            status: ProgramStatus::Normal,
-        }
+        Self::default()
     }
 
     pub fn append(&mut self, instructions: &[Command]) {
