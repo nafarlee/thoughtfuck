@@ -20,7 +20,7 @@ fn repl(mut vm: VM, mut program: Program) -> Result<(), Box<dyn Error>> {
     loop {
         match program.stack_depth() {
             0 => print!("tf> "),
-            x => print!("tf+{}> ", x),
+            x => print!("tf+{x}> "),
         }
         std::io::stdout().flush()?;
 
