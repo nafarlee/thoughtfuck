@@ -87,11 +87,9 @@ impl Program {
     }
 
     pub fn execute(&mut self, vm: &mut VM) -> Result<(), Box<dyn Error>> {
-        let mut index = self.instruction_pointer;
-        while index < self.instructions.len() {
+        while self.instruction_pointer < self.instructions.len() {
             let plan = self.plan(vm);
             self.apply(vm, plan)?;
-            index = self.instruction_pointer
         }
         Ok(())
     }
