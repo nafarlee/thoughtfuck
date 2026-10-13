@@ -192,4 +192,17 @@ mod tests {
             err.downcast_ref::<ImbalancedBrackets>()
         );
     }
+
+    #[test]
+    fn test_reverse_balanced_brackets() {
+        let mut program = Program::new();
+        program.append(&vec![Command::JumpBackward, Command::JumpForward]);
+        let Err(err) = program.assert_brackets_match() else {
+            panic!();
+        };
+        assert_eq!(
+            Some(&ImbalancedBrackets),
+            err.downcast_ref::<ImbalancedBrackets>()
+        );
+    }
 }
