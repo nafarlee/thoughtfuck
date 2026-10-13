@@ -94,9 +94,9 @@ mod tests {
         let mut stdout = io::stdout();
         let mut input = "".as_bytes();
         let vm = VM::new(&mut input, &mut stdout);
-        assert!(vm.cells[0] == 0);
-        assert!(vm.cells[TAPE_SIZE - 1] == 0);
-        assert!(vm.cells[0] == 0);
+        assert_eq!(vm.cells[0], 0);
+        assert_eq!(vm.cells[TAPE_SIZE - 1], 0);
+        assert_eq!(vm.cells[0], 0);
     }
 
     #[test]
@@ -105,7 +105,7 @@ mod tests {
         let mut input = "".as_bytes();
         let mut vm = VM::new(&mut input, &mut stdout);
         vm.increment();
-        assert!(vm.cells[0] == 1);
+        assert_eq!(vm.cells[0], 1);
     }
 
     #[test]
@@ -117,7 +117,7 @@ mod tests {
         let mut vm = VM::new(&mut input, &mut stdout);
         vm.cells[0] = STARTING_VALUE;
         vm.decrement();
-        assert!(vm.cells[0] == STARTING_VALUE - 1);
+        assert_eq!(vm.cells[0], STARTING_VALUE - 1);
     }
 
     #[test]
@@ -126,7 +126,7 @@ mod tests {
         let mut input = "".as_bytes();
         let mut vm = VM::new(&mut input, &mut stdout);
         vm.right_shift().unwrap();
-        assert!(vm.data_pointer == 1);
+        assert_eq!(vm.data_pointer, 1);
     }
 
     #[test]
@@ -138,7 +138,7 @@ mod tests {
         let mut vm = VM::new(&mut input, &mut stdout);
         vm.data_pointer = STARTING_POSITION;
         vm.left_shift().unwrap();
-        assert!(vm.data_pointer == 1);
+        assert_eq!(vm.data_pointer, 1);
     }
 
     #[test]
