@@ -8,7 +8,7 @@ use crate::vm::VM;
 #[derive(Default)]
 pub struct Program {
     instructions: Vec<Command>,
-    instruction_pointer: Option<usize>,
+    instruction_pointer: usize,
     jump_stack: Vec<usize>,
     jump_table: HashMap<usize, usize>,
     status: ProgramStatus,
@@ -38,7 +38,7 @@ impl Program {
     pub fn new() -> Program {
         Program {
             instructions: Vec::new(),
-            instruction_pointer: None,
+            instruction_pointer: 0,
             jump_stack: Vec::new(),
             jump_table: HashMap::new(),
             status: ProgramStatus::Normal,
@@ -47,9 +47,6 @@ impl Program {
 
     pub fn append(&mut self, instructions: &[Command]) {
         self.instructions.extend(instructions.iter().cloned());
-        if self.instruction_pointer.is_none() {
-            self.instruction_pointer = Some(0);
-        }
     }
 
     pub fn stack_depth(&self) -> usize {
@@ -70,9 +67,7 @@ impl Program {
     }
 
     fn plan(&self, vm: &VM) -> Effect {
-        let Some(index) = self.instruction_pointer else {
-            return Effect::NoOp;
-        };
+        let index = self.instruction_pointer;
         match (self.instructions[index], self.status) {
             (Command::JumpForward, ProgramStatus::Seeking(_)) => Effect::Push,
             (Command::JumpBackward, ProgramStatus::Seeking(goal)) => {
@@ -99,37 +94,33 @@ impl Program {
     }
 
     pub fn execute(&mut self, vm: &mut VM) -> Result<(), Box<dyn Error>> {
-        let Some(mut index) = self.instruction_pointer else {
-            return Ok(());
-        };
+        let mut index = self.instruction_pointer;
         while index < self.instructions.len() {
             let plan = self.plan(vm);
             self.apply(vm, plan)?;
-            index = self.instruction_pointer.unwrap();
+            index = self.instruction_pointer
         }
         Ok(())
     }
 
     fn apply(&mut self, vm: &mut VM, effect: Effect) -> Result<(), Box<dyn Error>> {
-        let Some(index) = self.instruction_pointer else {
-            return Ok(());
-        };
+        let index = self.instruction_pointer;
         match effect {
             Effect::StartSeeking => {
                 self.status = ProgramStatus::Seeking(self.stack_depth());
                 self.jump_stack.push(index);
-                self.instruction_pointer = Some(index + 1);
+                self.instruction_pointer = index + 1;
             }
             Effect::Push => {
                 self.jump_stack.push(index);
-                self.instruction_pointer = Some(index + 1);
+                self.instruction_pointer = index + 1;
             }
             Effect::Pop => {
                 let Some(start) = self.jump_stack.pop() else {
                     return Err(ImbalancedBrackets.into());
                 };
                 self.jump_table.insert(start, index);
-                self.instruction_pointer = Some(index + 1);
+                self.instruction_pointer = index + 1;
             }
             Effect::FindRightBracket => {
                 let Some(start) = self.jump_stack.pop() else {
@@ -137,26 +128,26 @@ impl Program {
                 };
                 self.status = ProgramStatus::Normal;
                 self.jump_table.insert(start, index);
-                self.instruction_pointer = Some(index + 1);
+                self.instruction_pointer = index + 1;
             }
             Effect::JumpToRightBracket => {
                 let Some(end) = self.jump_table.get(&index) else {
                     return Err(ImbalancedBrackets.into());
                 };
-                self.instruction_pointer = Some(end + 1);
+                self.instruction_pointer = end + 1;
             }
             Effect::JumpToLeftBracket => {
                 let Some(start) = self.jump_stack.last() else {
                     return Err(ImbalancedBrackets.into());
                 };
-                self.instruction_pointer = Some(start + 1)
+                self.instruction_pointer = start + 1
             }
             Effect::Seek => {
-                self.instruction_pointer = Some(index + 1);
+                self.instruction_pointer = index + 1;
             }
             Effect::Apply(c) => {
                 vm.apply(c)?;
-                self.instruction_pointer = Some(index + 1);
+                self.instruction_pointer = index + 1;
             }
             Effect::NoOp => {}
         }
