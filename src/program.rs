@@ -131,7 +131,7 @@ impl Program {
                 let Some(start) = self.jump_stack.last() else {
                     return Err(ImbalancedBrackets.into());
                 };
-                self.instruction_pointer = start + 1
+                self.instruction_pointer = start + 1;
             }
             Effect::Seek => {
                 self.instruction_pointer = index + 1;
