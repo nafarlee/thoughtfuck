@@ -1,14 +1,9 @@
-use thoughtfuck::*;
-
 use std::env;
 use std::error::Error;
 use std::fs::read_to_string;
 use std::io::Write;
 
-use errors::ImbalancedBrackets;
-use parse::parse;
-use program::Program;
-use vm::VM;
+use thoughtfuck::{errors::ImbalancedBrackets, parse::parse, program::Program, vm::VM};
 
 fn main() -> Result<(), Box<dyn Error>> {
     let mut stdout = std::io::stdout();
