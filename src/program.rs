@@ -15,7 +15,7 @@ pub struct Program {
 }
 
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
-pub enum ProgramStatus {
+enum ProgramStatus {
     #[default]
     Normal,
     Seeking(usize),
