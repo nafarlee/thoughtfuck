@@ -39,7 +39,7 @@ impl Program {
     }
 
     pub fn append(&mut self, instructions: &[Command]) {
-        self.instructions.extend(instructions.iter().cloned());
+        self.instructions.extend(instructions.iter().copied());
     }
 
     pub fn stack_depth(&self) -> usize {
