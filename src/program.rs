@@ -59,11 +59,12 @@ impl Program {
     }
 
     pub fn assert_brackets_match(&self) -> Result<(), Box<dyn Error>> {
-        let count: i64 = self.instructions.iter().fold(0, |acc, i| match i {
-            Command::JumpForward => acc + 1,
-            Command::JumpBackward => acc - 1,
-            _ => acc,
-        });
+        let count = self.instructions.iter().try_fold(0, |acc, i| match i {
+            Command::JumpForward => Ok(acc + 1),
+            Command::JumpBackward if acc == 0 => Err(ImbalancedBrackets),
+            Command::JumpBackward => Ok(acc - 1),
+            _ => Ok(acc),
+        })?;
         match count {
             0 => Ok(()),
             _ => Err(ImbalancedBrackets.into()),
