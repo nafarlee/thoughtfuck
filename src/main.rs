@@ -17,7 +17,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let program = Program::new();
     match env::args().nth(1) {
         None => repl(vm, program),
-        Some(arg) => interpreter(arg, vm, program),
+        Some(arg) => interpreter(&arg, vm, program),
     }
 }
 
@@ -45,8 +45,8 @@ fn repl(mut vm: VM, mut program: Program) -> Result<(), Box<dyn Error>> {
     }
 }
 
-fn interpreter(arg: String, mut vm: VM, mut program: Program) -> Result<(), Box<dyn Error>> {
-    let contents = read_to_string(&arg)?;
+fn interpreter(arg: &str, mut vm: VM, mut program: Program) -> Result<(), Box<dyn Error>> {
+    let contents = read_to_string(arg)?;
     program.append(&parse(&contents));
     program.assert_brackets_match()?;
     program.execute(&mut vm)?;
