@@ -2,7 +2,7 @@
 
 A brainfuck Interpreter/REPL written in Rust.
 
-## Synposis
+## Synopsis
 
     tf program.b
 
