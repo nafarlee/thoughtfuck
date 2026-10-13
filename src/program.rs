@@ -5,6 +5,7 @@ use crate::command::Command;
 use crate::errors::ImbalancedBrackets;
 use crate::vm::VM;
 
+#[derive(Default)]
 pub struct Program {
     instructions: Vec<Command>,
     instruction_pointer: Option<usize>,
@@ -13,8 +14,9 @@ pub struct Program {
     status: ProgramStatus,
 }
 
-#[derive(Clone, Copy, PartialEq, Debug)]
+#[derive(Clone, Copy, PartialEq, Debug, Default)]
 pub enum ProgramStatus {
+    #[default]
     Normal,
     Seeking(usize),
 }
