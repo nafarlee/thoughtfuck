@@ -31,7 +31,6 @@ enum Effect {
     JumpToLeftBracket,
     Apply(Command),
     Seek,
-    NoOp,
 }
 
 impl Program {
@@ -149,7 +148,6 @@ impl Program {
                 vm.apply(c)?;
                 self.instruction_pointer = index + 1;
             }
-            Effect::NoOp => {}
         }
         Ok(())
     }
